@@ -1,7 +1,7 @@
 <template>
   <div id="app">
     <header-nav />
-    <router-view/>
+    <router-view />
   </div>
 </template>
 
@@ -12,6 +12,11 @@ export default {
   name: 'App',
   components: {
     HeaderNav
+  },
+  data () {
+    return {
+      navOpen: false
+    }
   }
 }
 </script>
@@ -32,5 +37,10 @@ html, body {
   outline: none;
   box-sizing: border-box;
   font-family: 'Noto Sans KR', sans-serif;
+}
+
+#app {
+  width: 100%;
+  height: 100%;
 }
 </style>

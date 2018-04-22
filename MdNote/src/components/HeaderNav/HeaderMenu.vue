@@ -71,7 +71,7 @@ export default {
   width: 300px;
   height: calc(100vh - 65px);
   position: absolute;
-  background-color: rgb(245, 245, 245);
+  background-color: #FFECB3;
   top: 65px;
   left: -300px;
   transition: 0.3s;

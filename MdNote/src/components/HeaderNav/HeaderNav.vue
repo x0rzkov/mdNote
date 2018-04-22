@@ -18,9 +18,14 @@ export default {
   components: {
     HeaderMenu
   },
-  data () {
-    return {
-      headerMenu: false
+  computed: {
+    headerMenu: {
+      get () {
+        return this.$store.getters.headerMenuOpen
+      },
+      set (val) {
+        this.$store.dispatch('toggleHeaderMenu')
+      }
     }
   }
 }
@@ -31,7 +36,7 @@ export default {
   position: fixed;
   top: 0;
   width: 100vw;
-  background-color: deepskyblue;
+  background-color: #FFC107;
   height: 65px;
   display: flex;
   align-items: center;
