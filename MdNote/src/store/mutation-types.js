@@ -1,0 +1,1 @@
+export const SET_HEADER_MENU_OPEN = 'SET_HEADER_MENU_OPEN'
