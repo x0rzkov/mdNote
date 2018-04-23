@@ -36,7 +36,7 @@ export default {
   position: fixed;
   top: 0;
   width: 100vw;
-  background-color: #FFC107;
+  background-color: #FFD54F;
   height: 65px;
   display: flex;
   align-items: center;

@@ -74,7 +74,7 @@ export default {
   background-color: #FFECB3;
   top: 65px;
   left: -300px;
-  transition: 0.3s;
+  transition: transform 0.3s;
   will-change: transform;
 }
 
