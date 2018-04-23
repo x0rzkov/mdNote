@@ -68,9 +68,10 @@ export default {
 
 <style scoped>
 #explorer-wrapper {
-  padding-top: 65px;
+  position: absolute;
+  top: 65px;
   width: 300px;
-  height: 100%;
+  height: calc(100% - 65px);
   background-color: #FFF8E1;
   display: flex;
   flex-direction: column;

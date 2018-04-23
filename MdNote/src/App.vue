@@ -22,6 +22,8 @@ export default {
 </script>
 
 <style>
+@import url('https://fonts.googleapis.com/css?family=Nanum+Gothic+Coding');
+
 html, body {
   width: 100%;
   height: 100%;
@@ -36,7 +38,7 @@ html, body {
   border: 0;
   outline: none;
   box-sizing: border-box;
-  font-family: 'Noto Sans KR', sans-serif;
+  font-family: 'Nanum Gothic Coding', monospace;
 }
 
 #app {

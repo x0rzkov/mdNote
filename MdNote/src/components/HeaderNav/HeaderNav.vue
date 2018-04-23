@@ -34,6 +34,7 @@ export default {
 <style scoped>
 #header-nav-wrapper {
   position: fixed;
+  z-index: 100;
   top: 0;
   width: 100vw;
   background-color: #FFD54F;
