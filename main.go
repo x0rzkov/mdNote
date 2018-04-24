@@ -1,4 +1,4 @@
-package mdNote
+package main
 
 import (
 	"fmt"
