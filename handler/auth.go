@@ -36,9 +36,9 @@ func (h Handler) Login(c echo.Context) error {
 	}
 
 	if result := h.DB.First(dbUser); result.Error != nil {
-		return result.Error
+		return echo.NewHTTPError(http.StatusBadRequest, result.Error)
 	} else if result.RecordNotFound() {
-		return echo.NewHTTPError(http.StatusNoContent)
+		return c.NoContent(http.StatusNoContent)
 	} else {
 		jsonUser.Set(*dbUser)
 		token := jwt.NewWithClaims(jwt.SigningMethodHS256, jsonUser)
@@ -64,7 +64,7 @@ func (h Handler) SignUp(c echo.Context) error {
 	}
 
 	if result := h.DB.Create(dbUser); result.Error != nil {
-		return echo.NewHTTPError(http.StatusBadRequest)
+		return echo.NewHTTPError(http.StatusBadRequest, result.Error)
 	}
 
 	return c.NoContent(http.StatusCreated)
