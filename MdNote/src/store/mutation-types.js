@@ -1,0 +1,3 @@
+export const SET_HEADER_MENU_OPEN = 'SET_HEADER_MENU_OPEN'
+export const SET_CURRENT_NOTE = 'SET_CURRENT_NOTE'
+export const SET_NOTES = 'SET_NOTES'
