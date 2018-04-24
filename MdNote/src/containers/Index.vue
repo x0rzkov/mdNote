@@ -2,7 +2,7 @@
   <div id="index-page-wrapper" :class="{'slim': headerMenu}">
     <explorer />
     <div id="editor" :class="{'close': fullScreen}">
-      <textarea name="" id="text" v-model="source"></textarea>
+      <textarea name="" id="text" v-model="source" @blur="save"></textarea>
     </div>
     <div id="viewer" :class="{'full': fullScreen}">
       <div id="tools">
@@ -20,7 +20,6 @@ var hljs = require('highlight.js')
 
 var md = require('markdown-it')({
   highlight: function (str, lang) {
-    console.log(str, lang)
     if (lang && hljs.getLanguage(lang)) {
       try {
         return hljs.highlight(lang, str).value
@@ -51,6 +50,11 @@ export default {
     return {
       source: '',
       fullScreen: false
+    }
+  },
+  methods: {
+    save () {
+      console.log('saving')
     }
   }
 }

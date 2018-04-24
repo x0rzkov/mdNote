@@ -5,20 +5,24 @@
       <input type="text" id="search-box" v-model="searchBox" placeholder="Search">
     </div>
     <div class="bar"></div>
-    <div v-for="note in notes" :key="note.id" class="note-wrapper">
-      <div class="note">
-        <div class="note-title">
-          <img :src="require('@/assets/HeaderNav/HeaderMenu/notebook.svg')" >
-          {{ note.title }}
+    <div id="notes-wrapper">
+      <div v-for="note in notes" :key="note.id" class="note-wrapper">
+        <div class="note">
+          <div class="note-title">
+            <img :src="require('@/assets/HeaderNav/HeaderMenu/notebook.svg')" >
+            <div class="note-title-text">
+              {{ note.title }}
+            </div>
+          </div>
+          <div class="note-date">
+            {{ note.date }}
+          </div>
+          <div class="note-category">
+            {{ note.category }}
+          </div>
         </div>
-        <div class="note-date">
-          {{ note.date }}
-        </div>
-        <div class="note-category">
-          {{ note.category }}
-        </div>
+        <div class="bar"></div>
       </div>
-      <div class="bar"></div>
     </div>
   </div>
 </template>
@@ -28,39 +32,18 @@ export default {
   name: 'Explorer',
   data () {
     return {
-      searchBox: '',
-      notes: [
-        {
-          id: 1,
-          title: 'Memo',
-          date: '2017-04-25',
-          category: 'Go'
-        },
-        {
-          id: 2,
-          title: 'Memo',
-          date: '2017-04-25',
-          category: 'Go'
-        },
-        {
-          id: 3,
-          title: 'Memo',
-          date: '2017-04-25',
-          category: 'Go'
-        },
-        {
-          id: 4,
-          title: 'Memo',
-          date: '2017-04-25',
-          category: 'Go'
-        },
-        {
-          id: 5,
-          title: 'Memo',
-          date: '2017-04-25',
-          category: 'Go'
-        }
-      ]
+      searchBox: ''
+    }
+  },
+  computed: {
+    notes () {
+      if (this.searchBox === '') {
+        return this.$store.getters.notes
+      } else {
+        return this.$store.getters.notes.filter(note => {
+          return note.title.includes(this.searchBox)
+        })
+      }
     }
   }
 }
@@ -98,7 +81,7 @@ export default {
 #search-box {
   width: calc(100% - 20px);
   padding: 7px;
-  height: 55px;
+  height: 60px;
   font-size: 18px;
   background-color: rgba(0, 0, 0, 0);
 }
@@ -113,8 +96,15 @@ export default {
   color: rgba(0, 0, 0, 0.5)
 }
 
+#notes-wrapper {
+  width: 100%;
+  height: calc(100% - 60px);
+  overflow-y: auto;
+}
+
 .note-wrapper {
   width: 100%;
+  height: 100px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -127,6 +117,7 @@ export default {
 
 .note {
   width: 80%;
+  height: 130px;
   color: rgba(0, 0, 0, 0.3);
   display: flex;
   flex-direction: column;
@@ -151,6 +142,12 @@ export default {
   font-size: 18px;
   font-weight: bold;
   height: 30px;
+}
+
+.note-title-text {
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
 }
 
 .note-title > img {

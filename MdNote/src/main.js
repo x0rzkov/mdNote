@@ -4,7 +4,7 @@ import Vue from 'vue'
 import App from './App'
 import router from './router'
 import store from './store'
-import 'highlight.js/styles/default.css'
+import 'highlight.js/styles/atom-one-light.css'
 
 Vue.config.productionTip = false
 
