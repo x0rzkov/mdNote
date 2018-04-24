@@ -1,6 +1,8 @@
 import axios from 'axios'
 
-export const http = axios.create()
+export const http = axios.create({
+  baseURL: 'https://mdn0te.herokuapp.com/'
+})
 
 export const setCookie = function setCookie (name, value, days) {
   var expires = ''

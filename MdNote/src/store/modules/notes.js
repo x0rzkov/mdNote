@@ -4,66 +4,6 @@ import {http, getCookie} from '../../common'
 
 const state = {
   notes: [
-    {
-      id: 1,
-      title: 'Hello world',
-      date: '2017',
-      category: 'Go'
-    },
-    {
-      id: 2,
-      title: 'H2ello dssddssddddworld',
-      date: '2017',
-      category: 'Go'
-    },
-    {
-      id: 3,
-      title: 'Heello world',
-      date: '2017',
-      category: 'Go'
-    },
-    {
-      id: 4,
-      title: 'Hedllo world',
-      date: '2017',
-      category: 'Go'
-    },
-    {
-      id: 5,
-      title: 'Hello worl123d',
-      date: '2017',
-      category: 'Go'
-    },
-    {
-      id: 6,
-      title: 'Hello world',
-      date: '2017',
-      category: 'Go'
-    },
-    {
-      id: 7,
-      title: 'Hello1 worl1d',
-      date: '2017',
-      category: 'Go'
-    },
-    {
-      id: 8,
-      title: 'Hello world6',
-      date: '2017',
-      category: 'Go'
-    },
-    {
-      id: 9,
-      title: 'Hello world32',
-      date: '2017',
-      category: 'Go'
-    },
-    {
-      id: 10,
-      title: 'Hello world',
-      date: '2017',
-      category: 'Go'
-    }
   ],
   currentNote: {}
 }

@@ -1,1 +1,1 @@
-web: server
+web: mdn0te
