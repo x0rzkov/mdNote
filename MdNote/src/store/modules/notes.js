@@ -1,6 +1,7 @@
 /* eslint-disable */
 import * as types from '../mutation-types'
 import {http, getCookie} from '../../common'
+import toastr from 'toastr'
 
 const state = {
   notes: [
@@ -21,6 +22,7 @@ const getters = {
 
 const actions = {
   getNote ({commit}, payload) {
+    toastr.info('Loading')
     http.get('/note', {
       headers: {
         'Authorization': 'JWT ' + getCookie('JWT')
@@ -29,8 +31,10 @@ const actions = {
         id: payload
       }
     }).then(response => {
+      toastr.success('Loading Complete')
       commit(types.SET_CURRENT_NOTE, response.data)
     }).catch(err => {
+      toastr.error('Loading Failed')      
       console.log(err)
     })
   },
@@ -48,15 +52,25 @@ const actions = {
       console.log(err)
     })
   },
-  saveNote({commit}, payload) {
+  saveNote({commit, dispatch}, payload) {
     http.put('/note', payload, {
       headers: {
         'Authorization': 'JWT ' + getCookie('JWT')
       }
     }).then(response => {
        commit(types.SET_CURRENT_NOTE, response.data)
+       dispatch('getNoteList')
     }).catch(err => {
       console.log(err)
+    })
+  },
+  newNote({commit}) {
+    commit(types.SET_CURRENT_NOTE, {
+      content: '',
+      title: '',
+      id: '',
+      user_id: '',
+      category: ''
     })
   }
 }

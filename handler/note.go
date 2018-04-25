@@ -64,7 +64,11 @@ func (h Handler) SaveNote(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusBadRequest, err)
 	}
 
-	fmt.Println(note)
+	if note.Title == "" {
+		return c.NoContent(http.StatusBadRequest)
+	} else if note.Content == "" {
+		return c.NoContent(http.StatusBadRequest)
+	}
 
 	if note.ID == "" {
 		note.UserID = claim.Token

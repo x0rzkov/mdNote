@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"os"
+	"path/filepath"
 	"strings"
 
 	"mdNote/handler"
@@ -54,6 +55,12 @@ func main() {
 		defer h.DB.Close()
 	}
 	h.SecretKey = handler.GenerateRandomKey(64)
+
+	e.Static(filepath.Join("MdNote", "dist", "static"), "static")
+
+	e.GET("/", func(c echo.Context) error {
+		return c.File(filepath.Join("MdNote", "dist", "index.html"))
+	})
 
 	e.GET("/note", h.GetNote, h.AuthRequired())
 	e.GET("/note/list", h.GetNotes, h.AuthRequired())

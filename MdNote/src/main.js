@@ -4,7 +4,10 @@ import Vue from 'vue'
 import App from './App'
 import router from './router'
 import store from './store'
-import 'highlight.js/styles/atom-one-light.css'
+import 'highlight.js/styles/github.css'
+import 'toastr/build/toastr.min.css'
+import 'toastr/build/toastr.min.js'
+import 'github-markdown-css'
 
 Vue.config.productionTip = false
 

@@ -1,7 +1,7 @@
 <template>
   <div id="header-menu-wrapper" :class="{'menu-open': open}">
     <div id="menu-buttons">
-      <div class="button" v-for="button in menuButtons" :key="button.id">
+      <div class="button" v-for="button in menuButtons" :key="button.id" @click="button.onClick ? button.onClick() : null">
         <div class="button-img">
           <img :src="button.img">
         </div>
@@ -35,7 +35,10 @@ export default {
         {
           id: 1,
           text: 'New Note',
-          img: require('@/assets/HeaderNav/HeaderMenu/add.svg')
+          img: require('@/assets/HeaderNav/HeaderMenu/add.svg'),
+          onClick: () => {
+            this.$store.dispatch('newNote')
+          }
         },
         {
           id: 2,
