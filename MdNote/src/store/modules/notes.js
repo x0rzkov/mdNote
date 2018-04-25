@@ -8,7 +8,6 @@ const state = {
   currentNote: {
     content: '',
     title: '',
-    created_at: '',
     id: '',
     user_id: '',
     category: ''
@@ -27,7 +26,7 @@ const actions = {
         'Authorization': 'JWT ' + getCookie('JWT')
       },
       params: {
-        id: payload.id
+        id: payload
       }
     }).then(response => {
       commit(types.SET_CURRENT_NOTE, response.data)
@@ -50,7 +49,7 @@ const actions = {
     })
   },
   saveNote({commit}, payload) {
-    http.put('/note', JSON.stringify(payload), {
+    http.put('/note', payload, {
       headers: {
         'Authorization': 'JWT ' + getCookie('JWT')
       }
@@ -64,10 +63,10 @@ const actions = {
 
 const mutations = {
   [types.SET_CURRENT_NOTE] (state, payload) {
-    state.currentNote = payload.data
+    state.currentNote = payload
   },
   [types.SET_NOTES] (state, payload) {
-    state.notes = payload.data
+    state.notes = payload
   }
 }
 

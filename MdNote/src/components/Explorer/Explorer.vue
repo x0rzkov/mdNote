@@ -6,7 +6,7 @@
     </div>
     <div class="bar"></div>
     <div id="notes-wrapper">
-      <div v-for="note in notes" :key="note.id" class="note-wrapper">
+      <div v-for="note in notes" :key="note.id" class="note-wrapper" @click="$store.dispatch('getNote', note.id)">
         <div class="note">
           <div class="note-title">
             <img :src="require('@/assets/HeaderNav/HeaderMenu/notebook.svg')" >

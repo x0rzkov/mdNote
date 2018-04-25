@@ -15,7 +15,7 @@ func (h Handler) GetNote(c echo.Context) error {
 		UserID: claim.Token,
 	}
 
-	if id := c.Param("id"); id == "" {
+	if id := c.QueryParam("id"); id == "" {
 		return c.NoContent(http.StatusBadRequest)
 	} else {
 		note.ID = id
