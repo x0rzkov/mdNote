@@ -45,6 +45,9 @@ export default {
         })
       }
     }
+  },
+  beforeMount () {
+    this.$store.dispatch('getNoteList')
   }
 }
 </script>

@@ -5,7 +5,14 @@ import {http, getCookie} from '../../common'
 const state = {
   notes: [
   ],
-  currentNote: {}
+  currentNote: {
+    content: '',
+    title: '',
+    created_at: '',
+    id: '',
+    user_id: '',
+    category: ''
+  }
 }
 
 const getters = {
@@ -28,7 +35,7 @@ const actions = {
       console.log(err)
     })
   },
-  getNoteList ({commit, payload}) {
+  getNoteList ({commit, payload = {}}) {
     http.get('/note/list', {
       headers: {
         'Authorization': 'JWT ' + getCookie('JWT')

@@ -2,7 +2,7 @@
   <div id="index-page-wrapper" :class="{'slim': headerMenu}">
     <explorer />
     <div id="editor" :class="{'close': fullScreen}">
-      <textarea name="" id="text" v-model="source" @blur="save"></textarea>
+      <textarea name="" id="text" v-model="currentNote.content" @blur="save"></textarea>
     </div>
     <div id="viewer" :class="{'full': fullScreen}">
       <div id="tools">
@@ -43,18 +43,18 @@ export default {
       return this.fullScreen ? require('@/assets/Index/full-screen-exit.svg') : require('@/assets/Index/full-screen.svg')
     },
     htmlSource () {
-      return md.render(this.source)
+      return md.render(this.currentNote.content)
     }
   },
   data () {
     return {
-      source: '',
+      currentNote: this.$store.getters.currentNote,
       fullScreen: false
     }
   },
   methods: {
     save () {
-      console.log('saving')
+      this.$store.dispatch('saveNote', this.currentNote)
     }
   }
 }
