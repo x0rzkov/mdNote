@@ -1,11 +1,12 @@
 package handler
 
 import (
-	"github.com/labstack/echo"
-	"mdNote/model"
-	"github.com/dgrijalva/jwt-go"
-	"net/http"
 	"fmt"
+	"mdNote/model"
+	"net/http"
+
+	"github.com/dgrijalva/jwt-go"
+	"github.com/labstack/echo"
 )
 
 func (h Handler) GetNote(c echo.Context) error {

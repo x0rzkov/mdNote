@@ -1,8 +1,8 @@
 package handler
 
 import (
-	"net/http"
 	"mdNote/model"
+	"net/http"
 	"time"
 
 	"github.com/dgrijalva/jwt-go"

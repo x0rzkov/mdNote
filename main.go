@@ -11,13 +11,13 @@ import (
 	"github.com/labstack/echo"
 	"github.com/labstack/echo/middleware"
 
-	"github.com/lib/pq"
 	_ "github.com/jinzhu/gorm/dialects/postgres"
+	"github.com/lib/pq"
 )
 
 var (
-	PORT            string
-	DATABASE_URL    string
+	PORT         string
+	DATABASE_URL string
 )
 
 func init() {
@@ -60,7 +60,6 @@ func main() {
 
 	e.POST("/auth", h.Login)
 	e.POST("/signup", h.SignUp)
-
 
 	e.Logger.Fatal(e.Start(":" + PORT))
 }
