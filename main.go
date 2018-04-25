@@ -42,6 +42,9 @@ func main() {
 
 	e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
+	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
+		AllowMethods: []string{echo.OPTIONS, echo.GET, echo.PUT, echo.POST, echo.DELETE, echo.HEAD, echo.PATCH},
+	}))
 
 	h := new(handler.Handler)
 	if db, err := model.OpenAndCreate("postgres", DATABASE_URL); err != nil {
