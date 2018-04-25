@@ -15,7 +15,7 @@
             </div>
           </div>
           <div class="note-date">
-            {{ note.date }}
+            {{ note.created_at }}
           </div>
           <div class="note-category">
             {{ note.category }}

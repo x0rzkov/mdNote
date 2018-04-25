@@ -21,7 +21,7 @@ const getters = {
 }
 
 const actions = {
-  getNote ({commit, payload}) {
+  getNote ({commit}, payload) {
     http.get('/note', {
       headers: {
         'Authorization': 'JWT ' + getCookie('JWT')
@@ -35,7 +35,7 @@ const actions = {
       console.log(err)
     })
   },
-  getNoteList ({commit, payload = {}}) {
+  getNoteList ({commit}, payload = {}) {
     http.get('/note/list', {
       headers: {
         'Authorization': 'JWT ' + getCookie('JWT')
@@ -49,7 +49,7 @@ const actions = {
       console.log(err)
     })
   },
-  saveNote({commit, payload}) {
+  saveNote({commit}, payload) {
     http.put('/note', JSON.stringify(payload), {
       headers: {
         'Authorization': 'JWT ' + getCookie('JWT')
@@ -64,10 +64,10 @@ const actions = {
 
 const mutations = {
   [types.SET_CURRENT_NOTE] (state, payload) {
-    state.headerMenuOpen = payload
+    state.currentNote = payload.data
   },
   [types.SET_NOTES] (state, payload) {
-    state.notes = JSON.parse(payload)
+    state.notes = payload.data
   }
 }
 

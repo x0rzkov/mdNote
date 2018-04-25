@@ -54,6 +54,7 @@ export default {
   },
   methods: {
     save () {
+      console.log(this.currentNote)
       this.$store.dispatch('saveNote', this.currentNote)
     }
   }

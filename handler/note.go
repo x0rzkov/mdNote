@@ -27,9 +27,7 @@ func (h Handler) GetNote(c echo.Context) error {
 		return c.NoContent(http.StatusNotFound)
 	}
 
-	return c.JSON(http.StatusOK, echo.Map{
-		"data": &note,
-	})
+	return c.JSON(http.StatusOK, &note)
 }
 
 func (h Handler) GetNotes(c echo.Context) error {
@@ -44,9 +42,7 @@ func (h Handler) GetNotes(c echo.Context) error {
 			return c.NoContent(http.StatusNoContent)
 		}
 
-		return c.JSON(http.StatusOK, echo.Map{
-			"data": &notes,
-		})
+		return c.JSON(http.StatusOK, &notes)
 	} else {
 		notes := []model.Note{}
 
@@ -56,9 +52,7 @@ func (h Handler) GetNotes(c echo.Context) error {
 			return c.NoContent(http.StatusNoContent)
 		}
 
-		return c.JSON(http.StatusOK, echo.Map{
-			"data": &notes,
-		})
+		return c.JSON(http.StatusOK, &notes)
 	}
 }
 
@@ -69,6 +63,8 @@ func (h Handler) SaveNote(c echo.Context) error {
 	if err := c.Bind(&note); err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, err)
 	}
+
+	fmt.Println(note)
 
 	if note.ID == "" {
 		note.UserID = claim.Token
@@ -84,9 +80,7 @@ func (h Handler) SaveNote(c echo.Context) error {
 			return echo.NewHTTPError(http.StatusBadRequest, err)
 		}
 
-		return c.JSON(http.StatusCreated, echo.Map{
-			"data": &note,
-		})
+		return c.JSON(http.StatusCreated, &note)
 	} else if h.DB.First(&model.Note{}, "id = ?", note.ID).RecordNotFound() {
 		return c.NoContent(http.StatusNotFound)
 	}
@@ -95,9 +89,7 @@ func (h Handler) SaveNote(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusBadRequest, err)
 	}
 
-	return c.JSON(http.StatusOK, echo.Map{
-		"data": &note,
-	})
+	return c.JSON(http.StatusOK, &note)
 }
 
 func (h Handler) DeleteNote(c echo.Context) error {
