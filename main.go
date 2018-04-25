@@ -56,7 +56,7 @@ func main() {
 	}
 	h.SecretKey = handler.GenerateRandomKey(64)
 
-	e.Static(filepath.Join("MdNote", "dist", "static"), "static")
+	e.Static("/static", filepath.Join("MdNote", "dist", "static"))
 
 	e.GET("/", func(c echo.Context) error {
 		return c.File(filepath.Join("MdNote", "dist", "index.html"))
