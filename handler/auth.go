@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"errors"
+	"log"
 	"mdNote/model"
 	"net/http"
 	"os"
@@ -41,6 +42,7 @@ func (h Handler) Auth(c echo.Context) error {
 	case "github":
 		bindData := echo.Map{}
 		if err := c.Bind(&bindData); err != nil {
+			log.Println(err)
 			return echo.NewHTTPError(http.StatusBadRequest, err)
 		}
 		client := &http.Client{}
@@ -51,10 +53,12 @@ func (h Handler) Auth(c echo.Context) error {
 			"code":          bindData["code"].(string),
 		})
 		if err != nil {
+			log.Println(err)
 			return echo.NewHTTPError(http.StatusBadRequest, err)
 		}
 		req, err := http.NewRequest(echo.POST, "https://github.com/login/oauth/access_token", buf)
 		if err != nil {
+			log.Println(err)
 			return echo.NewHTTPError(http.StatusBadRequest, err)
 		}
 		req.Header.Set("Content-type", "application/json")
@@ -62,26 +66,31 @@ func (h Handler) Auth(c echo.Context) error {
 
 		res, err := client.Do(req)
 		if err != nil {
+			log.Println(err)
 			return echo.NewHTTPError(http.StatusBadRequest, err)
 		}
 
 		resBody := echo.Map{}
 		err = json.NewDecoder(res.Body).Decode(&resBody)
 		if err != nil {
+			log.Println(err)
 			return echo.NewHTTPError(http.StatusBadRequest, err)
 		}
 
 		if err, exist := resBody["error"]; exist {
+			log.Println(err)
 			return echo.NewHTTPError(http.StatusBadRequest, err)
 		}
 
 		accessToken, exist := resBody["access_token"]
 		if !exist {
+			log.Println(errors.New("Cannot find access_token"))
 			return echo.NewHTTPError(http.StatusBadRequest, "Cannot find access_token")
 		}
 
 		req, err = http.NewRequest(echo.GET, "https://api.github.com/user", nil)
 		if err != nil {
+			log.Println(err)
 			return echo.NewHTTPError(http.StatusBadRequest, err)
 		}
 
@@ -91,26 +100,31 @@ func (h Handler) Auth(c echo.Context) error {
 
 		res, err = client.Do(req)
 		if err != nil {
+			log.Println(err)
 			return echo.NewHTTPError(http.StatusBadRequest, err)
 		}
 
 		resBody = echo.Map{}
 		err = json.NewDecoder(res.Body).Decode(&resBody)
 		if err != nil {
+			log.Println(err)
 			return echo.NewHTTPError(http.StatusBadRequest, err)
 		}
 
 		if err, exist := resBody["error"]; exist {
+			log.Println(errors.New(err.(string)))
 			return echo.NewHTTPError(http.StatusBadRequest, err)
 		}
 
 		id, exist := resBody["id"]
 		if !exist {
+			log.Println(errors.New("Cannot find id"))
 			return echo.NewHTTPError(http.StatusBadRequest, "Cannot find id")
 		}
 
 		name, exist := resBody["login"]
 		if !exist {
+			log.Println(errors.New("Cannot find login"))
 			return echo.NewHTTPError(http.StatusBadRequest, "Cannot find login")
 		}
 
@@ -125,15 +139,18 @@ func (h Handler) Auth(c echo.Context) error {
 	httpStatus := http.StatusOK
 
 	if result := h.DB.First(dbUser); result.Error != nil {
+		log.Println(result.Error)
 		return echo.NewHTTPError(http.StatusBadRequest, result.Error)
 	} else if result.RecordNotFound() {
 		if err := h.DB.Create(dbUser); err != nil {
-			httpStatus = http.StatusCreated
+			log.Println(err)
 			return echo.NewHTTPError(http.StatusBadRequest, err)
 		}
+		httpStatus = http.StatusCreated
 	}
 
 	if err := jsonUser.Ensure(); err != nil {
+		log.Println(err)
 		return echo.NewHTTPError(http.StatusBadRequest, err)
 	}
 
@@ -141,7 +158,8 @@ func (h Handler) Auth(c echo.Context) error {
 
 	tokenString, err := token.SignedString(h.SecretKey)
 	if err != nil {
-		return err
+		log.Println(err)
+		return echo.NewHTTPError(http.StatusBadRequest, err)
 	}
 
 	cookie := new(http.Cookie)
