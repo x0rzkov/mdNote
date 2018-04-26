@@ -77,6 +77,8 @@ func (h Handler) Auth(c echo.Context) error {
 			return echo.NewHTTPError(http.StatusBadRequest, err)
 		}
 
+		log.Println("access_token:", resBody)
+
 		if err, exist := resBody["error"]; exist {
 			err = fmt.Errorf("access token response has error: %v", err)
 			log.Println(err)
@@ -114,6 +116,8 @@ func (h Handler) Auth(c echo.Context) error {
 			log.Println(err)
 			return echo.NewHTTPError(http.StatusBadRequest, err)
 		}
+
+		log.Println("user data:", resBody)
 
 		if err, exist := resBody["error"]; exist {
 			err = fmt.Errorf("get user data response has error: %v", err)
