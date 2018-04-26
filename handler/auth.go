@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"log"
 	"mdNote/model"
 	"net/http"
@@ -48,11 +49,13 @@ func (h Handler) Auth(c echo.Context) error {
 			"code":          c.QueryParam("code"),
 		})
 		if err != nil {
+			err = fmt.Errorf("access_token request json encoding: %v", err)
 			log.Println(err)
 			return echo.NewHTTPError(http.StatusBadRequest, err)
 		}
 		req, err := http.NewRequest(echo.POST, "https://github.com/login/oauth/access_token", buf)
 		if err != nil {
+			err = fmt.Errorf("access_token request making: %v", err)
 			log.Println(err)
 			return echo.NewHTTPError(http.StatusBadRequest, err)
 		}
@@ -61,6 +64,7 @@ func (h Handler) Auth(c echo.Context) error {
 
 		res, err := client.Do(req)
 		if err != nil {
+			err = fmt.Errorf("access_token requesting: %v", err)
 			log.Println(err)
 			return echo.NewHTTPError(http.StatusBadRequest, err)
 		}
@@ -68,11 +72,13 @@ func (h Handler) Auth(c echo.Context) error {
 		resBody := echo.Map{}
 		err = json.NewDecoder(res.Body).Decode(&resBody)
 		if err != nil {
+			err = fmt.Errorf("access_token response json decoding: %v", err)
 			log.Println(err)
 			return echo.NewHTTPError(http.StatusBadRequest, err)
 		}
 
 		if err, exist := resBody["error"]; exist {
+			err = fmt.Errorf("access token response has error: %v", err)
 			log.Println(err)
 			return echo.NewHTTPError(http.StatusBadRequest, err)
 		}
@@ -85,6 +91,7 @@ func (h Handler) Auth(c echo.Context) error {
 
 		req, err = http.NewRequest(echo.GET, "https://api.github.com/user", nil)
 		if err != nil {
+			err = fmt.Errorf("get user data request making: %v", err)
 			log.Println(err)
 			return echo.NewHTTPError(http.StatusBadRequest, err)
 		}
@@ -95,6 +102,7 @@ func (h Handler) Auth(c echo.Context) error {
 
 		res, err = client.Do(req)
 		if err != nil {
+			err = fmt.Errorf("get user data requesting: %v", err)
 			log.Println(err)
 			return echo.NewHTTPError(http.StatusBadRequest, err)
 		}
@@ -102,12 +110,14 @@ func (h Handler) Auth(c echo.Context) error {
 		resBody = echo.Map{}
 		err = json.NewDecoder(res.Body).Decode(&resBody)
 		if err != nil {
+			err = fmt.Errorf("get user data response json decoding: %v", err)
 			log.Println(err)
 			return echo.NewHTTPError(http.StatusBadRequest, err)
 		}
 
 		if err, exist := resBody["error"]; exist {
-			log.Println(errors.New(err.(string)))
+			err = fmt.Errorf("get user data response has error: %v", err)
+			log.Println(err)
 			return echo.NewHTTPError(http.StatusBadRequest, err)
 		}
 
@@ -136,16 +146,19 @@ func (h Handler) Auth(c echo.Context) error {
 	if result := h.DB.First(dbUser); result.Error != nil {
 		if result.RecordNotFound() {
 			if err := h.DB.Create(dbUser).Error; err != nil {
+				err = fmt.Errorf("create user: %v", err)
 				log.Println(err)
 				return echo.NewHTTPError(http.StatusBadRequest, err)
 			}
 			httpStatus = http.StatusCreated
 		} else {
-			return echo.NewHTTPError(http.StatusBadRequest, result.Error)
+			err := fmt.Errorf("find user: %v", result.Error)
+			return echo.NewHTTPError(http.StatusBadRequest, err)
 		}
 	}
 
 	if err := jsonUser.Ensure(); err != nil {
+		err = fmt.Errorf("jwt user claim ensure: %v", err)
 		log.Println(err)
 		return echo.NewHTTPError(http.StatusBadRequest, err)
 	}
@@ -154,6 +167,7 @@ func (h Handler) Auth(c echo.Context) error {
 
 	tokenString, err := token.SignedString(h.SecretKey)
 	if err != nil {
+		err = fmt.Errorf("jwt token to string: %v", err)
 		log.Println(err)
 		return echo.NewHTTPError(http.StatusBadRequest, err)
 	}
