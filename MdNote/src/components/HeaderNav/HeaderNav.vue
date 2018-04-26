@@ -33,9 +33,9 @@ export default {
   },
   methods: {
     authenticate (provider) {
-      this.$auth.authenticate(provider).then(function (res) {
-        console.log(res)
-      })
+      if (provider === 'github') {
+        window.location.href = `https://github.com/login/oauth/authorize?cliend_id=3ba8b2cde15d9f23ffe3&redirect_uri=https://mdn0te.herokuapp.com/auth/callback/github`
+      }
     }
   }
 }
