@@ -24,7 +24,7 @@ type UserClaim struct {
 }
 
 func (this *UserClaim) Ensure() error {
-	if this.Id == "" || this.Name == "" {
+	if this.Token == "" || this.Name == "" {
 		return errors.New("UserClaim.Ensure(): UserClaim validation error")
 	}
 	now := time.Now()
@@ -142,12 +142,12 @@ func (h Handler) Auth(c echo.Context) error {
 			return echo.NewHTTPError(http.StatusBadRequest, "Cannot find login")
 		}
 
-		jsonUser.Id = id
+		jsonUser.Token = id
 		jsonUser.Name = name
 	}
 
 	dbUser := &model.User{
-		ID: jsonUser.Id,
+		ID: jsonUser.Token,
 	}
 
 	if result := h.DB.First(dbUser); result.Error != nil {
