@@ -139,14 +139,15 @@ func (h Handler) Auth(c echo.Context) error {
 	httpStatus := http.StatusOK
 
 	if result := h.DB.First(dbUser); result.Error != nil {
-		log.Println(result.Error)
-		return echo.NewHTTPError(http.StatusBadRequest, result.Error)
-	} else if result.RecordNotFound() {
-		if err := h.DB.Create(dbUser); err != nil {
-			log.Println(err)
-			return echo.NewHTTPError(http.StatusBadRequest, err)
+		if result.RecordNotFound() {
+			if err := h.DB.Create(dbUser); err != nil {
+				log.Println(err)
+				return echo.NewHTTPError(http.StatusBadRequest, err)
+			}
+			httpStatus = http.StatusCreated
+		} else {
+			return echo.NewHTTPError(http.StatusBadRequest, result.Error)
 		}
-		httpStatus = http.StatusCreated
 	}
 
 	if err := jsonUser.Ensure(); err != nil {
