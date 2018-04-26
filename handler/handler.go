@@ -3,7 +3,6 @@ package handler
 import (
 	"crypto/rand"
 	"io"
-	"log"
 	"net/http"
 
 	"github.com/jinzhu/gorm"
@@ -42,7 +41,6 @@ func (h Handler) HTTPErrorHandler(err error, c echo.Context) {
 
 	c.Logger().Error(err)
 
-	log.Println(err)
 	// Send response
 	if !c.Response().Committed {
 		if c.Request().Method == echo.HEAD { // Issue #608

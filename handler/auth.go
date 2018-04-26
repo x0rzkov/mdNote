@@ -110,7 +110,7 @@ func (h Handler) Auth(c echo.Context) error {
 			return echo.NewHTTPError(http.StatusBadRequest, "Cannot find login")
 		}
 
-		jsonUser.Id = strconv.Itoa(id.(int))
+		jsonUser.Id = strconv.Itoa(int(id.(float64)))
 		jsonUser.Name = name.(string)
 	}
 
