@@ -145,8 +145,6 @@ func (h Handler) Auth(c echo.Context) error {
 		ID: jsonUser.Id,
 	}
 
-	httpStatus := http.StatusOK
-
 	if result := h.DB.First(dbUser); result.Error != nil {
 		if result.RecordNotFound() {
 			if err := h.DB.Create(dbUser).Error; err != nil {
@@ -154,7 +152,6 @@ func (h Handler) Auth(c echo.Context) error {
 				log.Println(err)
 				return echo.NewHTTPError(http.StatusBadRequest, err)
 			}
-			httpStatus = http.StatusCreated
 		} else {
 			err := fmt.Errorf("find user: %v", result.Error)
 			return echo.NewHTTPError(http.StatusBadRequest, err)
@@ -184,9 +181,7 @@ func (h Handler) Auth(c echo.Context) error {
 
 	c.SetCookie(cookie)
 
-	return c.JSON(httpStatus, echo.Map{
-		"token": tokenString,
-	})
+	return c.Redirect(http.StatusTemporaryRedirect, "/")
 }
 
 func (h Handler) AuthRequired() echo.MiddlewareFunc {
