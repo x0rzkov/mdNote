@@ -180,6 +180,8 @@ func (h Handler) Auth(c echo.Context) error {
 	cookie.Name = "JWT"
 	cookie.Value = tokenString
 	cookie.Expires = time.Unix(jsonUser.ExpiresAt, 0)
+	cookie.Path = "/"
+
 	c.SetCookie(cookie)
 
 	return c.JSON(httpStatus, echo.Map{
