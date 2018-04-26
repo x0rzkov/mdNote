@@ -9,6 +9,7 @@ import (
 	"mdNote/model"
 	"net/http"
 	"os"
+	"strconv"
 	"time"
 
 	"github.com/dgrijalva/jwt-go"
@@ -108,7 +109,12 @@ func (h Handler) Auth(c echo.Context) error {
 			return echo.NewHTTPError(http.StatusBadRequest, err)
 		}
 
-		userData := map[string]string{}
+		userData := struct {
+			Login string `json:"login,omitempty"`
+			ID    int64  `json:"id,omitempty"`
+			Error string `json:"error,omitempty"`
+		}{}
+
 		err = json.NewDecoder(res.Body).Decode(&userData)
 		if err != nil {
 			err = fmt.Errorf("get user data response json decoding: %v", err)
@@ -118,20 +124,20 @@ func (h Handler) Auth(c echo.Context) error {
 
 		log.Println("user data:", userData)
 
-		if err, exist := userData["error"]; exist {
+		if err := userData.Error; err != "" {
 			err := fmt.Errorf("get user data response has error: %v", err)
 			log.Println(err)
 			return echo.NewHTTPError(http.StatusBadRequest, err)
 		}
 
-		id, exist := userData["id"]
-		if !exist {
+		id := strconv.FormatInt(userData.ID, 16)
+		if id == "" {
 			log.Println(errors.New("Cannot find id"))
 			return echo.NewHTTPError(http.StatusBadRequest, "Cannot find id")
 		}
 
-		name, exist := userData["login"]
-		if !exist {
+		name := userData.Login
+		if name == "" {
 			log.Println(errors.New("Cannot find login"))
 			return echo.NewHTTPError(http.StatusBadRequest, "Cannot find login")
 		}
