@@ -40,17 +40,12 @@ func (h Handler) Auth(c echo.Context) error {
 
 	switch provider := c.Param("provider"); provider {
 	case "github":
-		bindData := echo.Map{}
-		if err := c.Bind(&bindData); err != nil {
-			log.Println(err)
-			return echo.NewHTTPError(http.StatusBadRequest, err)
-		}
 		client := &http.Client{}
 		buf := new(bytes.Buffer)
 		err := json.NewEncoder(buf).Encode(echo.Map{
-			"client_id":     bindData["clientId"].(string),
+			"client_id":     os.Getenv("GITHUB_CLIENT_ID"),
 			"client_secret": os.Getenv("GITHUB_CLIENT_SECRET"),
-			"code":          bindData["code"].(string),
+			"code":          c.QueryParam("code"),
 		})
 		if err != nil {
 			log.Println(err)
@@ -140,7 +135,7 @@ func (h Handler) Auth(c echo.Context) error {
 
 	if result := h.DB.First(dbUser); result.Error != nil {
 		if result.RecordNotFound() {
-			if err := h.DB.Create(dbUser); err != nil {
+			if err := h.DB.Create(dbUser).Error; err != nil {
 				log.Println(err)
 				return echo.NewHTTPError(http.StatusBadRequest, err)
 			}
@@ -169,7 +164,9 @@ func (h Handler) Auth(c echo.Context) error {
 	cookie.Expires = time.Unix(jsonUser.ExpiresAt, 0)
 	c.SetCookie(cookie)
 
-	return c.NoContent(httpStatus)
+	return c.JSON(httpStatus, echo.Map{
+		"token": tokenString,
+	})
 }
 
 func (h Handler) AuthRequired() echo.MiddlewareFunc {
