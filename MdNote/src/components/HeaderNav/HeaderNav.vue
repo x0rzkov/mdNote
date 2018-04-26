@@ -34,7 +34,7 @@ export default {
   methods: {
     authenticate (provider) {
       if (provider === 'github') {
-        window.location.href = `https://github.com/login/oauth/authorize?client_id=3ba8b2cde15d9f23ffe3&redirect_uri=https://mdn0te.herokuapp.com/auth/callback/github&scope=user`
+        window.location.href = `https://github.com/login/oauth/authorize?client_id=3ba8b2cde15d9f23ffe3&redirect_uri=https://mdn0te.herokuapp.com/auth/callback/github&scope=read:user`
       }
     }
   }
