@@ -70,7 +70,7 @@ func main() {
 	e.PUT("/note", h.SaveNote, h.AuthRequired())
 	e.DELETE("/note", h.DeleteNote, h.AuthRequired())
 
-	e.GET("/auth/callback/:provider", h.Auth)
+	e.POST("/auth/callback/:provider", h.Auth)
 
 	e.Logger.Fatal(e.Start(":" + PORT))
 }

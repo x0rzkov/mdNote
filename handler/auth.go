@@ -39,12 +39,16 @@ func (h Handler) Auth(c echo.Context) error {
 
 	switch provider := c.Param("provider"); provider {
 	case "github":
+		bindData := echo.Map{}
+		if err := c.Bind(&bindData); err != nil {
+			return echo.NewHTTPError(http.StatusBadRequest, err)
+		}
 		client := &http.Client{}
 		buf := new(bytes.Buffer)
 		err := json.NewEncoder(buf).Encode(echo.Map{
-			"client_id":     os.Getenv("GITHUB_CLIENT_ID"),
+			"client_id":     bindData["clientId"].(string),
 			"client_secret": os.Getenv("GITHUB_CLIENT_SECRET"),
-			"code":          c.QueryParam("code"),
+			"code":          bindData["code"].(string),
 		})
 		if err != nil {
 			return echo.NewHTTPError(http.StatusBadRequest, err)
