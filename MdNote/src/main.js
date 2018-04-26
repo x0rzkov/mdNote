@@ -22,6 +22,7 @@ Vue.use(VueAuthenticate, {
     github: {
       clientId: '3ba8b2cde15d9f23ffe3',
       redirectUri: 'https://mdn0te.herokuapp.com/auth/callback/github',
+      url: 'https://mdn0te.herokuapp.com/auth/callback/github',
       scope: ['read:user', 'user:email']
     }
   }
