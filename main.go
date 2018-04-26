@@ -56,6 +56,8 @@ func main() {
 	}
 	h.SecretKey = handler.GenerateRandomKey(64)
 
+	e.HTTPErrorHandler = h.HTTPErrorHandler
+
 	e.Static("/static", filepath.Join("MdNote", "dist", "static"))
 
 	e.GET("/", func(c echo.Context) error {
