@@ -68,8 +68,7 @@ func main() {
 	e.PUT("/note", h.SaveNote, h.AuthRequired())
 	e.DELETE("/note", h.DeleteNote, h.AuthRequired())
 
-	e.POST("/auth", h.Login)
-	e.POST("/signup", h.SignUp)
+	e.POST("/auth/callback/github", h.Auth)
 
 	e.Logger.Fatal(e.Start(":" + PORT))
 }

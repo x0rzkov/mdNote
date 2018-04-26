@@ -6,6 +6,9 @@
     <div id="logo-wrapper">
       <img :src="require('@/assets/HeaderNav/Logo.png')">
     </div>
+    <div id="sign-in" @click="authenticate('github')">
+      Sign In
+    </div>
     <header-menu :open="headerMenu" />
   </div>
 </template>
@@ -26,6 +29,13 @@ export default {
       set (val) {
         this.$store.dispatch('toggleHeaderMenu')
       }
+    }
+  },
+  methods: {
+    authenticate (provider) {
+      this.$auth.authenticate(provider).then(function (res) {
+        console.log(res)
+      })
     }
   }
 }
@@ -76,5 +86,11 @@ export default {
 
 #logo-wrapper img {
   height: 40px;
+}
+
+#sign-in {
+  position: absolute;
+  right: 15px;
+  cursor: pointer;
 }
 </style>

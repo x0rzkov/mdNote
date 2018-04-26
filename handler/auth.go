@@ -1,8 +1,13 @@
 package handler
 
 import (
+	"bytes"
+	"encoding/json"
+	"errors"
 	"mdNote/model"
 	"net/http"
+	"os"
+	"strconv"
 	"time"
 
 	"github.com/dgrijalva/jwt-go"
@@ -16,58 +21,132 @@ type UserClaim struct {
 	jwt.StandardClaims
 }
 
-func (this *UserClaim) Set(u model.User) {
+func (this *UserClaim) Ensure() error {
+	if this.Id == "" || this.Name == "" {
+		return errors.New("UserClaim.Ensure(): UserClaim validation error")
+	}
 	now := time.Now()
 
-	this.Token = u.ID
-	this.Name = u.Name
 	this.IssuedAt = now.Unix()
 	this.ExpiresAt = now.Add(time.Hour * 24).Unix()
+
+	return nil
 }
 
-func (h Handler) Login(c echo.Context) error {
+// GET /auth/callback/:provider
+func (h Handler) Auth(c echo.Context) error {
 	jsonUser := new(UserClaim)
-	if err := c.Bind(jsonUser); err != nil {
-		return err
+
+	switch provider := c.Param("provider"); provider {
+	case "github":
+		client := &http.Client{}
+		buf := new(bytes.Buffer)
+		err := json.NewEncoder(buf).Encode(echo.Map{
+			"client_id":     os.Getenv("GITHUB_CLIENT_ID"),
+			"client_secret": os.Getenv("GITHUB_CLIENT_SECRET"),
+			"code":          c.QueryParam("code"),
+		})
+		if err != nil {
+			return echo.NewHTTPError(http.StatusBadRequest, err)
+		}
+		req, err := http.NewRequest(echo.POST, "https://github.com/login/oauth/access_token", buf)
+		if err != nil {
+			return echo.NewHTTPError(http.StatusBadRequest, err)
+		}
+		req.Header.Set("Content-type", "application/json")
+		req.Header.Set("Accept", "application/json")
+
+		res, err := client.Do(req)
+		if err != nil {
+			return echo.NewHTTPError(http.StatusBadRequest, err)
+		}
+
+		resBody := echo.Map{}
+		err = json.NewDecoder(res.Body).Decode(&resBody)
+		if err != nil {
+			return echo.NewHTTPError(http.StatusBadRequest, err)
+		}
+
+		if err, exist := resBody["error"]; exist {
+			return echo.NewHTTPError(http.StatusBadRequest, err)
+		}
+
+		accessToken, exist := resBody["access_token"]
+		if !exist {
+			return echo.NewHTTPError(http.StatusBadRequest, "Cannot find access_token")
+		}
+
+		req, err = http.NewRequest(echo.GET, "https://api.github.com/user", nil)
+		if err != nil {
+			return echo.NewHTTPError(http.StatusBadRequest, err)
+		}
+
+		query := req.URL.Query()
+		query.Add("access_token", accessToken.(string))
+		req.URL.RawQuery = query.Encode()
+
+		res, err = client.Do(req)
+		if err != nil {
+			return echo.NewHTTPError(http.StatusBadRequest, err)
+		}
+
+		resBody = echo.Map{}
+		err = json.NewDecoder(res.Body).Decode(&resBody)
+		if err != nil {
+			return echo.NewHTTPError(http.StatusBadRequest, err)
+		}
+
+		if err, exist := resBody["error"]; exist {
+			return echo.NewHTTPError(http.StatusBadRequest, err)
+		}
+
+		id, exist := resBody["id"]
+		if !exist {
+			return echo.NewHTTPError(http.StatusBadRequest, "Cannot find id")
+		}
+
+		name, exist := resBody["login"]
+		if !exist {
+			return echo.NewHTTPError(http.StatusBadRequest, "Cannot find login")
+		}
+
+		jsonUser.Id = strconv.Itoa(id.(int))
+		jsonUser.Name = name.(string)
 	}
 
 	dbUser := &model.User{
-		ID: jsonUser.Token,
+		ID: jsonUser.Id,
 	}
+
+	httpStatus := http.StatusOK
 
 	if result := h.DB.First(dbUser); result.Error != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, result.Error)
 	} else if result.RecordNotFound() {
-		return c.NoContent(http.StatusNoContent)
-	} else {
-		jsonUser.Set(*dbUser)
-		token := jwt.NewWithClaims(jwt.SigningMethodHS256, jsonUser)
-
-		t, err := token.SignedString(h.SecretKey)
-		if err != nil {
-			return err
+		if err := h.DB.Create(dbUser); err != nil {
+			httpStatus = http.StatusCreated
+			return echo.NewHTTPError(http.StatusBadRequest, err)
 		}
-
-		return c.JSON(http.StatusOK, echo.Map{
-			"token": t,
-		})
-	}
-}
-
-func (h Handler) SignUp(c echo.Context) error {
-	jsonUser := new(UserClaim)
-	c.Bind(jsonUser)
-
-	dbUser := &model.User{
-		ID:   jsonUser.Token,
-		Name: jsonUser.Name,
 	}
 
-	if result := h.DB.Create(dbUser); result.Error != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, result.Error)
+	if err := jsonUser.Ensure(); err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, err)
 	}
 
-	return c.NoContent(http.StatusCreated)
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jsonUser)
+
+	tokenString, err := token.SignedString(h.SecretKey)
+	if err != nil {
+		return err
+	}
+
+	cookie := new(http.Cookie)
+	cookie.Name = "JWT"
+	cookie.Value = tokenString
+	cookie.Expires = time.Unix(jsonUser.ExpiresAt, 0)
+	c.SetCookie(cookie)
+
+	return c.NoContent(httpStatus)
 }
 
 func (h Handler) AuthRequired() echo.MiddlewareFunc {
