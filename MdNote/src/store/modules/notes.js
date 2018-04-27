@@ -35,7 +35,7 @@ const actions = {
       }
     }).then(response => {
       toastr.success('Loading Complete')
-      commit(types.SET_CURRENT_NOTE, response.data.note)
+      commit(types.SET_CURRENT_NOTE, response.data)
       dispatch('setIsLogin', true)      
     }).catch(err => {
       if (err.response.status === 400) {
