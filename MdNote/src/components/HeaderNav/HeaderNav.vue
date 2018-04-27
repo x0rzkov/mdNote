@@ -9,7 +9,7 @@
     <div v-if="!userData.isLogin" id="sign-in" @click="authenticate('github')">
       Sign In
     </div>
-    <div v-else id="user-name">
+    <div v-else id="user-name" @click="$store.dispatch('setIsLogin', false)">
       {{ userData.userName }}
     </div>
     <header-menu :open="headerMenu" />
@@ -55,6 +55,8 @@ export default {
   position: fixed;
   z-index: 100;
   top: 0;
+  left: 0;
+  right: 0;
   width: 100vw;
   background-color: #FFD54F;
   height: 65px;

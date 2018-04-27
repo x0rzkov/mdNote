@@ -15,7 +15,7 @@
         <img id="category-open-arrow" :src="require('@/assets/HeaderNav/HeaderMenu/arrow.svg')" :class="{'category-open': categoryButtons.open}"> Category
       </div>
       <div id="category-button-wrapper" v-show="categoryButtons.open">
-        <div class="category-button" v-for="button in categoryButtons.buttons" :key="button">
+        <div class="category-button" v-for="button in categoryButtons.buttons" :key="button" @click="$store.dispatch('getNoteList', button)">
           <img class="category-img" :src="require('@/assets/HeaderNav/HeaderMenu/folder.svg')"> {{ button }}
         </div>
       </div>

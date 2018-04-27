@@ -1,8 +1,17 @@
 <template>
-  <div id="index-page-wrapper" :class="{'slim': headerMenu}">
+  <div id="index-page-wrapper" :class="{'slim': headerMenu}" @click="categoryTyping = false">
+    <header-nav />
     <explorer />
     <div id="editor" :class="{'close': fullScreen}">
-      <input type="text" id="text-title" v-model="tempNote.title" @blur="save">
+      <div id="text-info">
+        <div id="text-category">
+          <input type="text" v-model="tempNote.category" @focus="categoryTyping = true" @click.stop="categoryTyping = true" @blur="save">
+          <div id="category-list" v-show="categoryTyping">
+            <div class="category-option" v-for="category in categories" :key="category" @click="tempNote.category = category; categoryTyping = false">{{ category }} </div>
+          </div>
+        </div>
+        <input type="text" id="text-title" v-model="tempNote.title" @blur="save">
+      </div>
       <textarea name="" id="text" v-model="tempNote.content" @blur="save"></textarea>
     </div>
     <div id="viewer" :class="{'full': fullScreen}">
@@ -18,9 +27,11 @@
 
 <script>
 import Explorer from '@/components/Explorer/Explorer'
+import HeaderNav from '@/components/HeaderNav/HeaderNav'
 import toastr from 'toastr'
 import hljs from 'highlight.js'
 import MarkdownIt from 'markdown-it'
+
 toastr.options.closeButton = true
 
 var md = MarkdownIt({
@@ -38,7 +49,8 @@ var md = MarkdownIt({
 export default {
   name: 'Index',
   components: {
-    Explorer
+    Explorer,
+    HeaderNav
   },
   computed: {
     headerMenu () {
@@ -49,6 +61,9 @@ export default {
     },
     htmlSource () {
       return md.render(this.tempNote.content)
+    },
+    categories () {
+      return this.$store.getters.categories
     }
   },
   data () {
@@ -61,7 +76,8 @@ export default {
         id: this.$store.getters.currentNote.id,
         user_id: this.$store.getters.currentNote.user_id
       },
-      fullScreen: false
+      fullScreen: false,
+      categoryTyping: false
     }
   },
   methods: {
@@ -127,8 +143,55 @@ export default {
   overflow-x: hidden;
 }
 
+#text-info {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+}
+
+#text-category {
+  width: 20%;
+  position: relative;
+  display: flex;
+  justify-content: center;
+}
+
+#text-category > input {
+  width: 100%;
+  background-color: rgb(240, 240, 240);
+  font-size: 30px;
+  font-weight: bold;
+  line-height: 60px;
+  height: 60px;
+  border-radius: 15px;
+  text-indent: 15px;
+}
+
+#category-list {
+  width: 80%;
+  background-color: rgba(250, 250, 250);
+  border: 1px solid rgb(240, 240, 240);
+  position: absolute;
+  top: 60px;
+  max-height: 160px;
+  overflow: auto;
+}
+
+.category-option {
+  width: 100%;
+  height: 40px;
+  font-weight: bold;
+  line-height: 40px;
+  text-indent: 10px;
+  font-size: 15px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  cursor: pointer;
+}
+
 #text-title {
-  width: 95%;
+  width: calc(95% - 20% - 5px);
   background-color: rgb(240, 240, 240);
   font-size: 30px;
   font-weight: bold;

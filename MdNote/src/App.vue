@@ -1,23 +1,12 @@
 <template>
   <div id="app">
-    <header-nav />
     <router-view />
   </div>
 </template>
 
 <script>
-import HeaderNav from '@/components/HeaderNav/HeaderNav'
-
 export default {
-  name: 'App',
-  components: {
-    HeaderNav
-  },
-  data () {
-    return {
-      navOpen: false
-    }
-  }
+  name: 'App'
 }
 </script>
 
@@ -50,7 +39,7 @@ html, body {
 }
 
 *::-webkit-scrollbar-track {
-  background: #f1f1f1;
+  background: #f8f8f8;
   border-radius: 5px;
 }
 
@@ -60,6 +49,6 @@ html, body {
 }
 
 *::-webkit-scrollbar-thumb:hover {
-  background: #555;
+  background: #777;
 }
 </style>

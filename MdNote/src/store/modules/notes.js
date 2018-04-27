@@ -48,13 +48,13 @@ const actions = {
       console.log(err)
     })
   },
-  getNoteList ({commit, dispatch}, payload = {}) {
+  getNoteList ({commit, dispatch}, payload = '') {
     http.get('/note/list', {
       headers: {
         'Authorization': 'JWT ' + getCookie('JWT')
       },
       params: {
-        category: payload.category || ''
+        category: payload
       }
     }).then(response => {
       commit(types.SET_NOTES, response.data.notes)

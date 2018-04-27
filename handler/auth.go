@@ -30,7 +30,7 @@ func (this *UserClaim) Ensure() error {
 	now := time.Now()
 
 	this.IssuedAt = now.Unix()
-	this.ExpiresAt = now.Add(time.Hour * 24).Unix()
+	this.ExpiresAt = now.Add(time.Hour * 72).Unix()
 
 	return nil
 }

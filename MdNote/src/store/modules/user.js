@@ -2,6 +2,7 @@
 import * as types from '../mutation-types'
 import {http, getCookie, deleteCookie} from '../../common'
 import toastr from 'toastr'
+import router from '../../router'
 
 toastr.options.positionClass = 'toast-bottom-right'
 
@@ -31,6 +32,7 @@ const mutations = {
   [types.SET_USER_NAME] (state, payload) {
     if (payload === '') {
       deleteCookie('JWT')
+      router.go('0')
     }
     state.userName = payload
   }
