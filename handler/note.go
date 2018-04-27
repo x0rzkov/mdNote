@@ -32,28 +32,42 @@ func (h Handler) GetNote(c echo.Context) error {
 
 func (h Handler) GetNotes(c echo.Context) error {
 	claim := c.Get("user").(*jwt.Token).Claims.(*UserClaim)
+	notes := []model.Note{}
 
 	if category := c.Param("category"); category == "" {
-		notes := []model.Note{}
-
 		if result := h.DB.Select("id, user_id, category, title, created_at").Order("created_at desc").Where(&model.Note{UserID: claim.Token}).Find(&notes); result.Error != nil {
 			return echo.NewHTTPError(http.StatusBadRequest, result.Error)
 		} else if result.RecordNotFound() {
 			return c.NoContent(http.StatusNoContent)
 		}
-
-		return c.JSON(http.StatusOK, &notes)
 	} else {
-		notes := []model.Note{}
-
 		if result := h.DB.Select("id, user_id, category, title, created_at").Order("created_at desc").Where(&model.Note{UserID: claim.Token, Category: category}).Find(&notes); result.Error != nil {
 			return echo.NewHTTPError(http.StatusBadRequest, result.Error)
 		} else if result.RecordNotFound() {
 			return c.NoContent(http.StatusNoContent)
 		}
-
-		return c.JSON(http.StatusOK, &notes)
 	}
+
+	rows, err := h.DB.Model(&model.Note{}).Where("user_id = ?", claim.Token).Select("DISTINCT(category)").Rows()
+	if err != nil {
+		err = fmt.Errorf("get category: %v", err)
+		return echo.NewHTTPError(http.StatusBadRequest, err)
+	}
+	defer rows.Close()
+	categories := []string{}
+	for rows.Next() {
+		category := ""
+		if err := rows.Scan(&category); err != nil {
+			err = fmt.Errorf("scan category: %v", err)
+			return echo.NewHTTPError(http.StatusBadRequest, err)
+		}
+		categories = append(categories, category)
+	}
+
+	return c.JSON(http.StatusOK, echo.Map{
+		"categories": &categories,
+		"notes":      &notes,
+	})
 }
 
 func (h Handler) SaveNote(c echo.Context) error {

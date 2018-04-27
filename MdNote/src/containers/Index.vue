@@ -72,8 +72,6 @@ export default {
         toastr.warning('Please write content')
       } else {
         if (this.isChange(this.tempNote, this.$store.getters.currentNote)) {
-          console.log('save')
-          toastr.success('Save : ' + this.tempNote.title)
           this.$store.dispatch('saveNote', this.tempNote)
         }
       }

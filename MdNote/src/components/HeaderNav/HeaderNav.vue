@@ -6,8 +6,11 @@
     <div id="logo-wrapper">
       <img :src="require('@/assets/HeaderNav/Logo.png')">
     </div>
-    <div id="sign-in" @click="authenticate('github')">
+    <div v-if="userData.isLogin" id="sign-in" @click="authenticate('github')">
       Sign In
+    </div>
+    <div v-else id="user-name">
+      {{ userData.userName }}
     </div>
     <header-menu :open="headerMenu" />
   </div>
@@ -29,6 +32,12 @@ export default {
       set (val) {
         this.$store.dispatch('toggleHeaderMenu')
       }
+    },
+    userData () {
+      let data = {}
+      data.isLogin = this.$store.getters.isLogin
+      if (data.isLogin !== '') data.userName = this.$store.getters.userName
+      return data
     }
   },
   methods: {
@@ -92,5 +101,10 @@ export default {
   position: absolute;
   right: 15px;
   cursor: pointer;
+}
+
+#user-name {
+  position: absolute;
+  right: 15px;
 }
 </style>

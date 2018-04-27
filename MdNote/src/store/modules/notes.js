@@ -3,8 +3,16 @@ import * as types from '../mutation-types'
 import {http, getCookie} from '../../common'
 import toastr from 'toastr'
 
+toastr.options.positionClass = 'toast-bottom-right'
+
 const state = {
   notes: [
+    {
+      title: 'hihi',
+      id: 'afs',
+      user_id: 'gege',
+      category: 'default'
+    }
   ],
   currentNote: {
     content: '',
@@ -12,16 +20,18 @@ const state = {
     id: '',
     user_id: '',
     category: ''
-  }
+  },
+  categories: []
 }
 
 const getters = {
   notes: state => state.notes,
-  currentNote: state => state.currentNote
+  currentNote: state => state.currentNote,
+  categories: state => state.categories
 }
 
 const actions = {
-  getNote ({commit}, payload) {
+  getNote ({commit, dispatch}, payload) {
     toastr.info('Loading')
     http.get('/note', {
       headers: {
@@ -32,13 +42,21 @@ const actions = {
       }
     }).then(response => {
       toastr.success('Loading Complete')
-      commit(types.SET_CURRENT_NOTE, response.data)
+      commit(types.SET_CURRENT_NOTE, response.data.notes)
+      commit(types.SET_CATEGORIES, response.data.categories)
+      dispatch('setIsLogin', true)      
     }).catch(err => {
-      toastr.error('Loading Failed')      
+      if (err.response.status === 400) {
+        toastr.error('Loading Failed')
+      } else if (err.response.status === 401) {
+        commit(types.SET_USER_NAME, '')
+        toastr.error('Please Sign In')
+        dispatch('setIsLogin', false)
+      }
       console.log(err)
     })
   },
-  getNoteList ({commit}, payload = {}) {
+  getNoteList ({commit, dispatch}, payload = {}) {
     http.get('/note/list', {
       headers: {
         'Authorization': 'JWT ' + getCookie('JWT')
@@ -48,7 +66,13 @@ const actions = {
       }
     }).then(response => {
       commit(types.SET_NOTES, response.data)
+      dispatch('setIsLogin', true)      
     }).catch(err => {
+      if (err.response.status === 401) {
+        commit(types.SET_USER_NAME, '')
+        toastr.error('Please Sign In')
+        dispatch('setIsLogin', false)      
+      }
       console.log(err)
     })
   },
@@ -58,10 +82,18 @@ const actions = {
         'Authorization': 'JWT ' + getCookie('JWT')
       }
     }).then(response => {
-       commit(types.SET_CURRENT_NOTE, response.data)
-       dispatch('getNoteList')
+        commit(types.SET_CURRENT_NOTE, response.data)
+        toastr.success('Saved: ' + response.data.title)      
+        dispatch('getNoteList')
+        dispatch('setIsLogin', true)              
     }).catch(err => {
-      console.log(err)
+      if (err.response.status === 400) {
+        toastr.error('Saving Failed')
+        dispatch('setIsLogin', false)      
+      } else if (err.response.status === 401) {
+        commit(types.SET_USER_NAME, '')
+        toastr.error('Please Sign In')
+      }
     })
   },
   newNote({commit}) {
@@ -81,6 +113,9 @@ const mutations = {
   },
   [types.SET_NOTES] (state, payload) {
     state.notes = payload
+  },
+  [types.SET_CATEGORIES] (state, payload) {
+    state.categories = payload
   }
 }
 

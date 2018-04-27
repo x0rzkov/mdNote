@@ -29,6 +29,11 @@ export default {
   props: {
     open: {type: Boolean}
   },
+  watch: {
+    '$store.getters.categories' (val) {
+      this.categoryButtons.buttons = val
+    }
+  },
   data () {
     return {
       menuButtons: [
@@ -58,11 +63,7 @@ export default {
       ],
       categoryButtons: {
         open: false,
-        buttons: [
-          'Go',
-          'Lol',
-          'Docs'
-        ]
+        buttons: this.$store.getters.categories
       }
     }
   }
