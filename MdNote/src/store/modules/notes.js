@@ -6,14 +6,7 @@ import toastr from 'toastr'
 toastr.options.positionClass = 'toast-bottom-right'
 
 const state = {
-  notes: [
-    {
-      title: 'hihi',
-      id: 'afs',
-      user_id: 'gege',
-      category: 'default'
-    }
-  ],
+  notes: [],
   currentNote: {
     content: '',
     title: '',

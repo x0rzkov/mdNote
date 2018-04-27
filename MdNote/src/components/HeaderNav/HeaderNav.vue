@@ -6,7 +6,7 @@
     <div id="logo-wrapper">
       <img :src="require('@/assets/HeaderNav/Logo.png')">
     </div>
-    <div v-if="userData.isLogin" id="sign-in" @click="authenticate('github')">
+    <div v-if="!userData.isLogin" id="sign-in" @click="authenticate('github')">
       Sign In
     </div>
     <div v-else id="user-name">
