@@ -108,5 +108,10 @@ export default {
 #user-name {
   position: absolute;
   right: 15px;
+  cursor: pointer;
+}
+
+#user-name:hover {
+  color: #d35d5d;
 }
 </style>

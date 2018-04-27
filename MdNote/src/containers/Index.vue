@@ -5,7 +5,7 @@
     <div id="editor" :class="{'close': fullScreen}">
       <div id="text-info">
         <div id="text-category">
-          <input type="text" v-model="tempNote.category" @focus="categoryTyping = true" @click.stop="categoryTyping = true" @blur="save">
+          <input type="text" v-model="tempNote.category" @focus="categoryTyping = true" @click.stop="categoryTyping = true" @blur="save; categoryTyping = false">
           <div id="category-list" v-show="categoryTyping">
             <div class="category-option" v-for="category in categories" :key="category" @click="tempNote.category = category; categoryTyping = false">{{ category }} </div>
           </div>

@@ -34,7 +34,7 @@ func (h Handler) GetNotes(c echo.Context) error {
 	claim := c.Get("user").(*jwt.Token).Claims.(*UserClaim)
 	notes := []model.Note{}
 
-	if category := c.Param("category"); category == "" {
+	if category := c.QueryParam("category"); category == "" {
 		if result := h.DB.Select("id, user_id, category, title, created_at").Order("created_at desc").Where(&model.Note{UserID: claim.Token}).Find(&notes); result.Error != nil {
 			return echo.NewHTTPError(http.StatusBadRequest, result.Error)
 		} else if result.RecordNotFound() {
