@@ -35,8 +35,7 @@ const actions = {
       }
     }).then(response => {
       toastr.success('Loading Complete')
-      commit(types.SET_CURRENT_NOTE, response.data.notes)
-      commit(types.SET_CATEGORIES, response.data.categories)
+      commit(types.SET_CURRENT_NOTE, response.data.note)
       dispatch('setIsLogin', true)      
     }).catch(err => {
       if (err.response.status === 400) {
@@ -58,7 +57,8 @@ const actions = {
         category: payload.category || ''
       }
     }).then(response => {
-      commit(types.SET_NOTES, response.data)
+      commit(types.SET_NOTES, response.data.notes)
+      commit(types.SET_CATEGORIES, response.data.categories)
       dispatch('setIsLogin', true)      
     }).catch(err => {
       if (err.response.status === 401) {

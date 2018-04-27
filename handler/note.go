@@ -65,8 +65,8 @@ func (h Handler) GetNotes(c echo.Context) error {
 	}
 
 	return c.JSON(http.StatusOK, echo.Map{
-		"categories": &categories,
-		"notes":      &notes,
+		"categories": categories,
+		"notes":      notes,
 	})
 }
 
