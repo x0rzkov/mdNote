@@ -15,7 +15,7 @@
         <img id="category-open-arrow" :src="require('@/assets/HeaderNav/HeaderMenu/arrow.svg')" :class="{'category-open': categoryButtons.open}"> Category
       </div>
       <div id="category-button-wrapper" v-show="categoryButtons.open">
-        <div class="category-button" v-for="button in categoryButtons.buttons" :key="button" @click="$store.dispatch('getNoteList', button)">
+        <div class="category-button" v-for="button in categoryButtons.buttons" :key="button" @click="selectCategory(button)">
           <img class="category-img" :src="require('@/assets/HeaderNav/HeaderMenu/folder.svg')"> {{ button }}
         </div>
       </div>
@@ -48,7 +48,11 @@ export default {
         {
           id: 2,
           text: 'All Notes',
-          img: require('@/assets/HeaderNav/HeaderMenu/notebook.svg')
+          img: require('@/assets/HeaderNav/HeaderMenu/notebook.svg'),
+          onClick: () => {
+            this.$store.commit('SET_CATEGORY', '')
+            this.$store.dispatch('getNoteList')
+          }
         },
         {
           id: 3,
@@ -65,6 +69,12 @@ export default {
         open: false,
         buttons: this.$store.getters.categories
       }
+    }
+  },
+  methods: {
+    categorySelect (category) {
+      this.$store.commit('SET_CATEGORY', category)
+      this.$store.dispatch('getNoteList')
     }
   }
 }

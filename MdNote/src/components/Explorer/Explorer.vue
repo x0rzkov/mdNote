@@ -6,21 +6,8 @@
     </div>
     <div class="bar"></div>
     <div id="notes-wrapper">
-      <div v-for="note in notes" :key="note.id" class="note-wrapper" @click="$store.dispatch('getNote', note.id)">
-        <div class="note">
-          <div class="note-title">
-            <img :src="require('@/assets/HeaderNav/HeaderMenu/notebook.svg')" >
-            <div class="note-title-text">
-              {{ note.title }}
-            </div>
-          </div>
-          <div class="note-date">
-            {{ note.created_at }}
-          </div>
-          <div class="note-category">
-            {{ note.category }}
-          </div>
-        </div>
+      <div v-for="note in notes" :key="note.id" class="note-wrapper">
+        <note :noteId="note.id" :category="note.category" :title="note.title" :createdAt="note.created_at"/>
         <div class="bar"></div>
       </div>
     </div>
@@ -28,8 +15,13 @@
 </template>
 
 <script>
+import Note from '@/components/Explorer/Note'
+
 export default {
   name: 'Explorer',
+  components: {
+    Note
+  },
   data () {
     return {
       searchBox: ''
@@ -116,61 +108,5 @@ export default {
 .bar {
   width: 80%;
   border-top: 1px solid rgba(0, 0, 0, 0.1);
-}
-
-.note {
-  width: 80%;
-  height: 130px;
-  color: rgba(0, 0, 0, 0.3);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 7px;
-  transition: background-color 0.1s;
-  cursor: pointer;
-}
-
-.note:hover {
-  background-color: rgba(0, 0, 0, 0.1);
-}
-
-.note:hover > .note-title {
-  color: rgba(0, 0, 0, 0.6);
-}
-
-.note-title {
-  width: 100%;
-  display: flex;
-  align-items: center;
-  font-size: 18px;
-  font-weight: bold;
-  height: 30px;
-}
-
-.note-title-text {
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  overflow: hidden;
-}
-
-.note-title > img {
-  width: 16px;
-  height: 16px;
-  margin-left: 15px;
-  margin-right: 15px;
-}
-
-.note-date {
-  font-size: 13px;
-  width: 90%;
-  margin-top: 5px;
-  margin-bottom: 5px;
-}
-
-.note-category {
-  font-size: 15px;
-  width: 90%;
-  text-align: right;
-  font-weight: bold;
 }
 </style>

@@ -16,7 +16,9 @@
     </div>
     <div id="viewer" :class="{'full': fullScreen}">
       <div id="tools">
-        <img :src="fullScreenImg" id="full-screen-img" @click="fullScreen = !fullScreen">
+        <img :src="fullScreenImg" @click="fullScreen = !fullScreen">
+        <img :src="garbage">
+        <img :src="starred">
       </div>
       <div id="markdown-title">{{ tempNote.title }}</div>
       <div id="markdown" v-html="htmlSource" class="markdown-body">
@@ -59,6 +61,12 @@ export default {
     fullScreenImg () {
       return this.fullScreen ? require('@/assets/Index/full-screen-exit.svg') : require('@/assets/Index/full-screen.svg')
     },
+    garbage () {
+      return this.tempNote.deleted_at === '' ? require('@/assets/Index/garbage.svg') : require('@/assets/Index/restore.svg')
+    },
+    starred () {
+      return this.tempNote.starred ? require('@/assets/Index/filled-star.svg') : require('@/assets/Index/star.svg')
+    },
     htmlSource () {
       return md.render(this.tempNote.content)
     },
@@ -74,7 +82,9 @@ export default {
         category: this.$store.getters.currentNote.category,
         created_at: this.$store.getters.currentNote.created_at,
         id: this.$store.getters.currentNote.id,
-        user_id: this.$store.getters.currentNote.user_id
+        user_id: this.$store.getters.currentNote.user_id,
+        deleted_at: this.$store.getters.currentNote.deleted_at,
+        starred: this.$store.getters.currentNote.starred
       },
       fullScreen: false,
       categoryTyping: false
@@ -228,20 +238,20 @@ export default {
 
 #tools {
   float: right;
-  width: 30px;
   height: 30px;
+  width: 100px;
   position: absolute;
   top: 15px;
   right: 15px;
   background-color: rgb(240, 240, 240);
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: space-around;
 }
 
-#full-screen-img {
-  width: 15px;
-  height: 15px;
+#tools > img {
+  width: 20px;
+  height: 20px;
   cursor: pointer;
 }
 

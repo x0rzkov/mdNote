@@ -12,15 +12,20 @@ const state = {
     title: '',
     id: '',
     user_id: '',
-    category: ''
+    category: '',
+    created_at: '',
+    deleted_at: '',
+    starred: false
   },
-  categories: []
+  categories: [],
+  selectedCategory: ''
 }
 
 const getters = {
   notes: state => state.notes,
   currentNote: state => state.currentNote,
-  categories: state => state.categories
+  categories: state => state.categories,
+  selectedCategory: state => state.selectedCategory
 }
 
 const actions = {
@@ -48,13 +53,13 @@ const actions = {
       console.log(err)
     })
   },
-  getNoteList ({commit, dispatch}, payload = '') {
+  getNoteList ({commit, dispatch, getters}) {
     http.get('/note/list', {
       headers: {
         'Authorization': 'JWT ' + getCookie('JWT')
       },
       params: {
-        category: payload
+        category: getters.selectedCategory
       }
     }).then(response => {
       commit(types.SET_NOTES, response.data.notes)
@@ -89,13 +94,33 @@ const actions = {
       }
     })
   },
+  deletedNote({dispatch}, payload) {
+    http.delete('/note', null, {
+      headers: {
+        'Authorization': 'JWT ' + getCookie('JWT')
+      }
+    }).then(response => {
+      toastr.success('Deleting Complete')
+      dispatch('newNote')
+    }).catch(err => {
+      if (err.response.status === 404) {
+        toastr.error('Deleting Failed')
+      } else if (err.response.status === 401) {
+        commit(types.SET_USER_NAME, '')
+        toastr.error('Please Sign In')
+      }
+    })
+  },
   newNote({commit}) {
     commit(types.SET_CURRENT_NOTE, {
       content: '',
       title: '',
       id: '',
       user_id: '',
-      category: ''
+      category: '',
+      created_at: '',
+      deleted_at: '',
+      starred: false
     })
   }
 }
@@ -109,6 +134,9 @@ const mutations = {
   },
   [types.SET_CATEGORIES] (state, payload) {
     state.categories = payload
+  },
+  [types.SET_CATEGORY] (state, payload) {
+    state.category = payload
   }
 }
 
