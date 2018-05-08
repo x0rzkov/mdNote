@@ -67,7 +67,7 @@ const actions = {
       console.log(err)
     })
   },
-  saveNote({commit, dispatch}, payload) {
+  saveNote ({commit, dispatch}, payload) {
     http.put('/note', payload, {
       headers: {
         'Authorization': 'JWT ' + getCookie('JWT')
@@ -86,7 +86,7 @@ const actions = {
       }
     })
   },
-  deleteNote({dispatch}, payload) {
+  deleteNote ({dispatch}, payload) {
     http.delete('/note', {
       headers: {
         'Authorization': 'JWT ' + getCookie('JWT')
@@ -108,7 +108,7 @@ const actions = {
       }
     })
   },
-  newNote({commit}) {
+  newNote ({commit}) {
     commit(types.SET_CURRENT_NOTE, {
       content: '',
       title: '',
@@ -132,7 +132,7 @@ const actions = {
       console.log(err)
     })
   },
-  restoreNote({dispatch, getters}, payload) {
+  restoreNote ({dispatch, getters}, payload) {
     http.post('/note/restore', {id: payload}, {
       headers: {
         'Authorization': 'JWT ' + getCookie('JWT')
@@ -140,6 +140,7 @@ const actions = {
     }).then(response => {
         toastr.success('Restoring Complete')      
         dispatch('getDeletedNoteList')
+        dispatch('newNote')
         dispatch('setIsLogin', true)
     }).catch(err => {
       if (err.response.status === 400) {
@@ -148,6 +149,22 @@ const actions = {
         dispatch('setIsLogin', false)      
         toastr.error('Please Sign In')
       }
+    })
+  },
+  getStarredNoteList ({dispatch, getters, commit}) {
+    http.get('/note/list/starred', {
+      headers: {
+        'Authorization': 'JWT ' + getCookie('JWT')
+      }
+    }).then(response => {
+      commit(types.SET_NOTES, response.data)
+      dispatch('setIsLogin', true)      
+    }).catch(err => {
+      if (err.response.status === 401) {
+        toastr.error('Please Sign In')
+        dispatch('setIsLogin', false)  
+      }
+      console.log(err)
     })
   }
 }

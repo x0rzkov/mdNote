@@ -15,7 +15,7 @@
         <img id="category-open-arrow" :src="require('@/assets/HeaderNav/HeaderMenu/arrow.svg')" :class="{'category-open': categoryButtons.open}"> Category
       </div>
       <div id="category-button-wrapper" v-show="categoryButtons.open">
-        <div class="category-button" v-for="button in categoryButtons.buttons" :key="button" @click="selectCategory(button)">
+        <div class="category-button" v-for="button in categoryButtons.buttons" :key="button" @click="selectCategory(button)" :class="{'selected': $store.getters.selectedCategory === button}">
           <img class="category-img" :src="require('@/assets/HeaderNav/HeaderMenu/folder.svg')"> {{ button }}
         </div>
       </div>
@@ -57,7 +57,11 @@ export default {
         {
           id: 3,
           text: 'Starred',
-          img: require('@/assets/HeaderNav/HeaderMenu/star.svg')
+          img: require('@/assets/HeaderNav/HeaderMenu/star.svg'),
+          onClick: () => {
+            this.$store.commit('SET_CATEGORY', '')
+            this.$store.dispatch('getStarredNoteList')
+          }
         },
         {
           id: 4,
@@ -77,8 +81,13 @@ export default {
   },
   methods: {
     selectCategory (category) {
-      this.$store.commit('SET_CATEGORY', category)
-      this.$store.dispatch('getNoteList')
+      if (this.$store.getters.selectedCategory === category) {
+        this.$store.commit('SET_CATEGORY', '')
+        this.$store.dispatch('getNoteList')
+      } else {
+        this.$store.commit('SET_CATEGORY', category)
+        this.$store.dispatch('getNoteList')
+      }
     }
   }
 }
@@ -197,6 +206,10 @@ export default {
 
 .category-button:hover {
   background-color: rgba(0, 0, 0, 0.1);
+}
+
+.category-button.selected {
+  background-color: rgba(0, 0, 0, 0.05);
 }
 
 .category-img {

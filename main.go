@@ -65,6 +65,7 @@ func main() {
 	e.GET("/note", h.GetNote, h.AuthRequired())
 	e.GET("/note/list", h.GetNotes, h.AuthRequired())
 	e.GET("/note/list/deleted", h.GetDeletedNotes, h.AuthRequired())
+	e.GET("/note/list/starred", h.GetStarredNotes, h.AuthRequired())
 	e.PUT("/note", h.SaveNote, h.AuthRequired())
 
 	e.DELETE("/note", h.DeleteNote, h.AuthRequired())

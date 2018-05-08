@@ -48,11 +48,3 @@
 [prune]
   go-tests = true
   unused-packages = true
-
-[[constraint]]
-  name = "github.com/firebase/firebase-admin-go"
-  version = "2.6.1"
-
-[[constraint]]
-  name = "firebase.google.com/go"
-  version = "2.6.1"

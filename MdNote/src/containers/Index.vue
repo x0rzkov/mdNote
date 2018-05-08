@@ -17,8 +17,8 @@
     <div id="viewer" :class="{'full': fullScreen}">
       <div id="tools">
         <img :src="fullScreenImg" @click="fullScreen = !fullScreen">
-        <img :src="garbage" @click="tempNote.deleted_at ? $store.dispatch('restoreNote', tempNote.id) : $store.dispatch('deleteNote', tempNote.id)">
-        <img :src="starred">
+        <img :src="garbage" @click="deleteNote">
+        <img :src="starred" @click="starNote">
       </div>
       <div id="markdown-title">{{ tempNote.title }}</div>
       <div id="markdown" v-html="htmlSource" class="markdown-body">
@@ -109,6 +109,22 @@ export default {
         }
       }
       return false
+    },
+    starNote () {
+      if (this.tempNote.starred) {
+        this.tempNote.starred = false
+        this.save()
+      } else {
+        this.tempNote.starred = true
+        this.save()
+      }
+    },
+    deleteNote () {
+      if (this.tempNote.deleted_at) {
+        this.$store.dispatch('restoreNote', this.tempNote.id)
+      } else {
+        this.$store.dispatch('deleteNote', this.tempNote.id)
+      }
     }
   },
   watch: {

@@ -65,8 +65,8 @@ func (h Handler) GetNotes(c echo.Context) error {
 	}
 
 	return c.JSON(http.StatusOK, echo.Map{
-		"categories": categories,
-		"notes":      notes,
+		"categories": &categories,
+		"notes":      &notes,
 	})
 }
 
@@ -161,4 +161,17 @@ func (h Handler) RestoreNote(c echo.Context) error {
 	}
 
 	return c.NoContent(http.StatusOK)
+}
+
+func (h Handler) GetStarredNotes(c echo.Context) error {
+	claim := c.Get("user").(*jwt.Token).Claims.(*UserClaim)
+	notes := []model.Note{}
+
+	if result := h.DB.Select("id, user_id, category, title, created_at").Order("created_at desc").Where("user_id = ? AND starred = ?", claim.Token, true).Find(&notes); result.Error != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, result.Error)
+	} else if result.RecordNotFound() {
+		return c.NoContent(http.StatusNoContent)
+	}
+
+	return c.JSON(http.StatusOK, &notes)
 }

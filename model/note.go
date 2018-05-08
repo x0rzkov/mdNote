@@ -12,4 +12,5 @@ type Note struct {
 	Content   string     `gorm:"NOT NULL;column:content" json:"content,omitempty"`
 	CreatedAt time.Time  `gorm:"NOT NULL;column:created_at" json:"created_at,omitempty"`
 	DeletedAt *time.Time `gorm:"column:deleted_at" json:"deleted_at,omitempty"`
+	Starred   bool       `gorm:"NOT NULL;column:starred" json:"starred,omitempty"`
 }
