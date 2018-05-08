@@ -64,9 +64,11 @@ func main() {
 
 	e.GET("/note", h.GetNote, h.AuthRequired())
 	e.GET("/note/list", h.GetNotes, h.AuthRequired())
-
+	e.GET("/note/list/deleted", h.GetDeletedNotes, h.AuthRequired())
 	e.PUT("/note", h.SaveNote, h.AuthRequired())
+
 	e.DELETE("/note", h.DeleteNote, h.AuthRequired())
+	e.POST("/note/restore", h.RestoreNote, h.AuthRequired())
 
 	e.GET("/auth/callback/:provider", h.Auth)
 

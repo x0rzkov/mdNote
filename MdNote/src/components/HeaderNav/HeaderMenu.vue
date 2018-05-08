@@ -62,7 +62,11 @@ export default {
         {
           id: 4,
           text: 'Trash',
-          img: require('@/assets/HeaderNav/HeaderMenu/garbage.svg')
+          img: require('@/assets/HeaderNav/HeaderMenu/garbage.svg'),
+          onClick: () => {
+            this.$store.commit('SET_CATEGORY', '')
+            this.$store.dispatch('getDeletedNoteList')
+          }
         }
       ],
       categoryButtons: {
@@ -72,7 +76,7 @@ export default {
     }
   },
   methods: {
-    categorySelect (category) {
+    selectCategory (category) {
       this.$store.commit('SET_CATEGORY', category)
       this.$store.dispatch('getNoteList')
     }

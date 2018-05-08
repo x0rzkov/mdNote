@@ -21,7 +21,7 @@ func (h Handler) GetNote(c echo.Context) error {
 		note.ID = id
 	}
 
-	if result := h.DB.First(&note); result.Error != nil {
+	if result := h.DB.Unscoped().First(&note); result.Error != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, result.Error)
 	} else if result.RecordNotFound() {
 		return c.NoContent(http.StatusNotFound)
@@ -35,13 +35,13 @@ func (h Handler) GetNotes(c echo.Context) error {
 	notes := []model.Note{}
 
 	if category := c.QueryParam("category"); category == "" {
-		if result := h.DB.Select("id, user_id, category, title, created_at").Order("created_at desc").Where(&model.Note{UserID: claim.Token}).Find(&notes); result.Error != nil {
+		if result := h.DB.Select("id, user_id, category, title, created_at").Order("created_at desc").Where("user_id = ?", claim.Token).Find(&notes); result.Error != nil {
 			return echo.NewHTTPError(http.StatusBadRequest, result.Error)
 		} else if result.RecordNotFound() {
 			return c.NoContent(http.StatusNoContent)
 		}
 	} else {
-		if result := h.DB.Select("id, user_id, category, title, created_at").Order("created_at desc").Where(&model.Note{UserID: claim.Token, Category: category}).Find(&notes); result.Error != nil {
+		if result := h.DB.Select("id, user_id, category, title, created_at").Order("created_at desc").Where("user_id = ? AND category = ?", claim.Token, category).Find(&notes); result.Error != nil {
 			return echo.NewHTTPError(http.StatusBadRequest, result.Error)
 		} else if result.RecordNotFound() {
 			return c.NoContent(http.StatusNoContent)
@@ -126,6 +126,38 @@ func (h Handler) DeleteNote(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusBadRequest, result.Error)
 	} else if result.RecordNotFound() {
 		return c.NoContent(http.StatusNotFound)
+	}
+
+	return c.NoContent(http.StatusOK)
+}
+
+func (h Handler) GetDeletedNotes(c echo.Context) error {
+	claim := c.Get("user").(*jwt.Token).Claims.(*UserClaim)
+	notes := []model.Note{}
+
+	if result := h.DB.Unscoped().Select("id, user_id, category, title, created_at, deleted_at").Order("deleted_at desc").Where("user_id = ? AND deleted_at IS NOT NULL", claim.Token).Find(&notes); result.Error != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, result.Error)
+	} else if result.RecordNotFound() {
+		return c.NoContent(http.StatusNoContent)
+	}
+
+	return c.JSON(http.StatusOK, &notes)
+}
+
+func (h Handler) RestoreNote(c echo.Context) error {
+	claim := c.Get("user").(*jwt.Token).Claims.(*UserClaim)
+
+	note := model.Note{}
+	if err := c.Bind(&note); err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, err)
+	}
+
+	if result := h.DB.Unscoped().Model(&note).Where("user_id = ? AND id = ? AND deleted_at IS NOT NULL", claim.Token, note.ID).Update("deleted_at", nil); result.Error != nil {
+		if result.RecordNotFound() {
+			return c.NoContent(http.StatusNotFound)
+		}
+
+		return echo.NewHTTPError(http.StatusBadRequest, result.Error)
 	}
 
 	return c.NoContent(http.StatusOK)

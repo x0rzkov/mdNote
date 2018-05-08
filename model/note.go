@@ -10,6 +10,6 @@ type Note struct {
 	Category  string     `gorm:"default:'default';NOT NULL;column:category" json:"category,omitempty"`
 	Title     string     `gorm:"NOT NULL;column:title" json:"title,omitempty"`
 	Content   string     `gorm:"NOT NULL;column:content" json:"content,omitempty"`
-	CreatedAt time.Time  `gorm:"column:created_at" json:"created_at,omitempty"`
+	CreatedAt time.Time  `gorm:"NOT NULL;column:created_at" json:"created_at,omitempty"`
 	DeletedAt *time.Time `gorm:"column:deleted_at" json:"deleted_at,omitempty"`
 }

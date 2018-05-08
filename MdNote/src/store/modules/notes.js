@@ -10,12 +10,7 @@ const state = {
   currentNote: {
     content: '',
     title: '',
-    id: '',
-    user_id: '',
-    category: '',
-    created_at: '',
-    deleted_at: '',
-    starred: false
+    category: ''
   },
   categories: [],
   selectedCategory: ''
@@ -46,7 +41,6 @@ const actions = {
       if (err.response.status === 400) {
         toastr.error('Loading Failed')
       } else if (err.response.status === 401) {
-        commit(types.SET_USER_NAME, '')
         toastr.error('Please Sign In')
         dispatch('setIsLogin', false)
       }
@@ -67,9 +61,8 @@ const actions = {
       dispatch('setIsLogin', true)      
     }).catch(err => {
       if (err.response.status === 401) {
-        commit(types.SET_USER_NAME, '')
         toastr.error('Please Sign In')
-        dispatch('setIsLogin', false)      
+        dispatch('setIsLogin', false)  
       }
       console.log(err)
     })
@@ -82,31 +75,35 @@ const actions = {
     }).then(response => {
         commit(types.SET_CURRENT_NOTE, response.data)
         toastr.success('Saved: ' + response.data.title)      
+        dispatch('setIsLogin', true)
         dispatch('getNoteList')
-        dispatch('setIsLogin', true)              
     }).catch(err => {
       if (err.response.status === 400) {
         toastr.error('Saving Failed')
-        dispatch('setIsLogin', false)      
       } else if (err.response.status === 401) {
-        commit(types.SET_USER_NAME, '')
+        dispatch('setIsLogin', false)      
         toastr.error('Please Sign In')
       }
     })
   },
-  deletedNote({dispatch}, payload) {
-    http.delete('/note', null, {
+  deleteNote({dispatch}, payload) {
+    http.delete('/note', {
       headers: {
         'Authorization': 'JWT ' + getCookie('JWT')
+      },
+      params: {
+        id: payload
       }
     }).then(response => {
       toastr.success('Deleting Complete')
+      dispatch('setIsLogin', true)      
       dispatch('newNote')
+      dispatch('getNoteList')
     }).catch(err => {
       if (err.response.status === 404) {
         toastr.error('Deleting Failed')
       } else if (err.response.status === 401) {
-        commit(types.SET_USER_NAME, '')
+        dispatch('setIsLogin', false)      
         toastr.error('Please Sign In')
       }
     })
@@ -115,12 +112,42 @@ const actions = {
     commit(types.SET_CURRENT_NOTE, {
       content: '',
       title: '',
-      id: '',
-      user_id: '',
       category: '',
-      created_at: '',
-      deleted_at: '',
-      starred: false
+    })
+  },
+  getDeletedNoteList ({commit, dispatch, getters}) {
+    http.get('/note/list/deleted', {
+      headers: {
+        'Authorization': 'JWT ' + getCookie('JWT')
+      }
+    }).then(response => {
+      commit(types.SET_NOTES, response.data)
+      dispatch('setIsLogin', true)      
+    }).catch(err => {
+      if (err.response.status === 401) {
+        commit(types.SET_USER_NAME, '')
+        toastr.error('Please Sign In')
+        dispatch('setIsLogin', false)      
+      }
+      console.log(err)
+    })
+  },
+  restoreNote({dispatch, getters}, payload) {
+    http.post('/note/restore', {id: payload}, {
+      headers: {
+        'Authorization': 'JWT ' + getCookie('JWT')
+      }
+    }).then(response => {
+        toastr.success('Restoring Complete')      
+        dispatch('getDeletedNoteList')
+        dispatch('setIsLogin', true)
+    }).catch(err => {
+      if (err.response.status === 400) {
+        toastr.error('Restoring Failed')
+      } else if (err.response.status === 401) {
+        dispatch('setIsLogin', false)      
+        toastr.error('Please Sign In')
+      }
     })
   }
 }
@@ -136,7 +163,7 @@ const mutations = {
     state.categories = payload
   },
   [types.SET_CATEGORY] (state, payload) {
-    state.category = payload
+    state.selectedCategory = payload
   }
 }
 

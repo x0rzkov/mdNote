@@ -17,7 +17,7 @@
     <div id="viewer" :class="{'full': fullScreen}">
       <div id="tools">
         <img :src="fullScreenImg" @click="fullScreen = !fullScreen">
-        <img :src="garbage">
+        <img :src="garbage" @click="tempNote.deleted_at ? $store.dispatch('restoreNote', tempNote.id) : $store.dispatch('deleteNote', tempNote.id)">
         <img :src="starred">
       </div>
       <div id="markdown-title">{{ tempNote.title }}</div>
@@ -62,7 +62,7 @@ export default {
       return this.fullScreen ? require('@/assets/Index/full-screen-exit.svg') : require('@/assets/Index/full-screen.svg')
     },
     garbage () {
-      return this.tempNote.deleted_at === '' ? require('@/assets/Index/garbage.svg') : require('@/assets/Index/restore.svg')
+      return this.tempNote.deleted_at ? require('@/assets/Index/restore.svg') : require('@/assets/Index/garbage.svg')
     },
     starred () {
       return this.tempNote.starred ? require('@/assets/Index/filled-star.svg') : require('@/assets/Index/star.svg')
@@ -118,6 +118,8 @@ export default {
         content: val.content,
         category: val.category,
         created_at: val.created_at,
+        deleted_at: val.deleted_at,
+        starred: val.starred,
         id: val.id,
         user_id: val.user_id
       }
