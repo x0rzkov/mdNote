@@ -39,6 +39,7 @@ export default {
     }
   },
   beforeMount () {
+    this.$store.commit('SET_ALL_NOTES', true)
     this.$store.dispatch('getNoteList')
   }
 }

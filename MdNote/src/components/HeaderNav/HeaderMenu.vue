@@ -1,7 +1,7 @@
 <template>
   <div id="header-menu-wrapper" :class="{'menu-open': open}">
     <div id="menu-buttons">
-      <div class="button" v-for="button in menuButtons" :key="button.id" @click="button.onClick ? button.onClick() : null">
+      <div class="button" :class="{'selected': button.selected}" v-for="button in menuButtons" :key="button.id" @click="button.onClick ? button.onClick() : null">
         <div class="button-img">
           <img :src="button.img">
         </div>
@@ -32,6 +32,10 @@ export default {
   watch: {
     '$store.getters.categories' (val) {
       this.categoryButtons.buttons = val
+    },
+    '$store.getters.allNotes' (val) {
+      this.menuButtons[1].selected = val
+      this.menuButtons[2].selected = !val
     }
   },
   data () {
@@ -51,8 +55,10 @@ export default {
           img: require('@/assets/HeaderNav/HeaderMenu/notebook.svg'),
           onClick: () => {
             this.$store.commit('SET_CATEGORY', '')
+            this.$store.commit('SET_ALL_NOTES', true)
             this.$store.dispatch('getNoteList')
-          }
+          },
+          selected: this.$store.getters.allNotes
         },
         {
           id: 3,
@@ -60,8 +66,10 @@ export default {
           img: require('@/assets/HeaderNav/HeaderMenu/star.svg'),
           onClick: () => {
             this.$store.commit('SET_CATEGORY', '')
-            this.$store.dispatch('getStarredNoteList')
-          }
+            this.$store.commit('SET_ALL_NOTES', false)
+            this.$store.dispatch('getNoteList')
+          },
+          selected: !this.$store.getters.allNotes
         },
         {
           id: 4,
@@ -69,6 +77,7 @@ export default {
           img: require('@/assets/HeaderNav/HeaderMenu/garbage.svg'),
           onClick: () => {
             this.$store.commit('SET_CATEGORY', '')
+            this.$store.commit('SET_ALL_NOTES', true)
             this.$store.dispatch('getDeletedNoteList')
           }
         }
@@ -83,9 +92,11 @@ export default {
     selectCategory (category) {
       if (this.$store.getters.selectedCategory === category) {
         this.$store.commit('SET_CATEGORY', '')
+        this.$store.commit('SET_ALL_NOTES', true)
         this.$store.dispatch('getNoteList')
       } else {
         this.$store.commit('SET_CATEGORY', category)
+        this.$store.commit('SET_ALL_NOTES', true)
         this.$store.dispatch('getNoteList')
       }
     }
@@ -208,7 +219,7 @@ export default {
   background-color: rgba(0, 0, 0, 0.1);
 }
 
-.category-button.selected {
+.selected {
   background-color: rgba(0, 0, 0, 0.05);
 }
 

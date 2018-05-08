@@ -1,6 +1,7 @@
 export const SET_HEADER_MENU_OPEN = 'SET_HEADER_MENU_OPEN'
 export const SET_CURRENT_NOTE = 'SET_CURRENT_NOTE'
 export const SET_NOTES = 'SET_NOTES'
+export const SET_ALL_LOTES = 'SET_ALL_NOTES'
 export const SET_CATEGORIES = 'SET_CATEGORIES'
 export const SET_CATEGORY = 'SET_CATEGORY'
 export const SET_USER_NAME = 'SET_USER_NAME'

@@ -13,14 +13,16 @@ const state = {
     category: ''
   },
   categories: [],
-  selectedCategory: ''
+  selectedCategory: '',
+  allNotes: true
 }
 
 const getters = {
   notes: state => state.notes,
   currentNote: state => state.currentNote,
   categories: state => state.categories,
-  selectedCategory: state => state.selectedCategory
+  selectedCategory: state => state.selectedCategory,
+  allNotes: state => state.allNotes
 }
 
 const actions = {
@@ -48,24 +50,41 @@ const actions = {
     })
   },
   getNoteList ({commit, dispatch, getters}) {
-    http.get('/note/list', {
-      headers: {
-        'Authorization': 'JWT ' + getCookie('JWT')
-      },
-      params: {
-        category: getters.selectedCategory
-      }
-    }).then(response => {
-      commit(types.SET_NOTES, response.data.notes)
-      commit(types.SET_CATEGORIES, response.data.categories)
-      dispatch('setIsLogin', true)      
-    }).catch(err => {
-      if (err.response.status === 401) {
-        toastr.error('Please Sign In')
-        dispatch('setIsLogin', false)  
-      }
-      console.log(err)
-    })
+    if (getters.allNotes) {
+      http.get('/note/list', {
+        headers: {
+          'Authorization': 'JWT ' + getCookie('JWT')
+        },
+        params: {
+          category: getters.selectedCategory
+        }
+      }).then(response => {
+        commit(types.SET_NOTES, response.data.notes)
+        commit(types.SET_CATEGORIES, response.data.categories)
+        dispatch('setIsLogin', true)      
+      }).catch(err => {
+        if (err.response.status === 401) {
+          toastr.error('Please Sign In')
+          dispatch('setIsLogin', false)  
+        }
+        console.log(err)
+      })
+    } else {
+      http.get('/note/list/starred', {
+        headers: {
+          'Authorization': 'JWT ' + getCookie('JWT')
+        }
+      }).then(response => {
+        commit(types.SET_NOTES, response.data)
+        dispatch('setIsLogin', true)      
+      }).catch(err => {
+        if (err.response.status === 401) {
+          toastr.error('Please Sign In')
+          dispatch('setIsLogin', false)  
+        }
+        console.log(err)
+      })
+    }
   },
   saveNote ({commit, dispatch}, payload) {
     http.put('/note', payload, {
@@ -150,22 +169,6 @@ const actions = {
         toastr.error('Please Sign In')
       }
     })
-  },
-  getStarredNoteList ({dispatch, getters, commit}) {
-    http.get('/note/list/starred', {
-      headers: {
-        'Authorization': 'JWT ' + getCookie('JWT')
-      }
-    }).then(response => {
-      commit(types.SET_NOTES, response.data)
-      dispatch('setIsLogin', true)      
-    }).catch(err => {
-      if (err.response.status === 401) {
-        toastr.error('Please Sign In')
-        dispatch('setIsLogin', false)  
-      }
-      console.log(err)
-    })
   }
 }
 
@@ -181,6 +184,9 @@ const mutations = {
   },
   [types.SET_CATEGORY] (state, payload) {
     state.selectedCategory = payload
+  },
+  [types.SET_ALL_LOTES] (state, payload) {
+    state.allNotes = payload
   }
 }
 
