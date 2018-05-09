@@ -275,13 +275,14 @@ export default {
 
 #markdown-title {
   width: 95%;
+  padding: 15px;
+  word-break: break-all;
   font-size: 50px;
   font-weight: bold;
   line-height: 80px;
-  height: 80px;
+  min-height: 80px;
   margin: 5px;
   border-radius: 15px;
-  text-indent: 15px;
 }
 
 #markdown {
