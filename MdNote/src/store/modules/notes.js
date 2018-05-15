@@ -14,7 +14,7 @@ const state = {
   },
   categories: [],
   selectedCategory: '',
-  allNotes: true
+  selectedDirectory: ''
 }
 
 const getters = {
@@ -22,7 +22,7 @@ const getters = {
   currentNote: state => state.currentNote,
   categories: state => state.categories,
   selectedCategory: state => state.selectedCategory,
-  allNotes: state => state.allNotes
+  selectedDirectory: state => state.selectedDirectory
 }
 
 const actions = {
@@ -50,7 +50,7 @@ const actions = {
     })
   },
   getNoteList ({commit, dispatch, getters}) {
-    if (getters.allNotes) {
+    if (getters.selectedDirectory == 'All Notes') {
       http.get('/note/list', {
         headers: {
           'Authorization': 'JWT ' + getCookie('JWT')
@@ -69,7 +69,7 @@ const actions = {
         }
         console.log(err)
       })
-    } else {
+    } else if (getters.selectedDirectory == 'Starred') {
       http.get('/note/list/starred', {
         headers: {
           'Authorization': 'JWT ' + getCookie('JWT')
@@ -185,8 +185,8 @@ const mutations = {
   [types.SET_CATEGORY] (state, payload) {
     state.selectedCategory = payload
   },
-  [types.SET_ALL_LOTES] (state, payload) {
-    state.allNotes = payload
+  [types.SET_DIRECTORY] (state, payload) {
+    state.selectedDirectory = payload
   }
 }
 

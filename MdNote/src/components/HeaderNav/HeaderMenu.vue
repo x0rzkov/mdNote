@@ -1,7 +1,7 @@
 <template>
   <div id="header-menu-wrapper" :class="{'menu-open': open}">
     <div id="menu-buttons">
-      <div class="button" :class="{'selected': button.selected}" v-for="button in menuButtons" :key="button.id" @click="button.onClick ? button.onClick() : null">
+      <div class="button" :class="{'selected': button.text == selectedDirectory}" v-for="button in menuButtons" :key="button.id" @click="button.onClick ? button.onClick() : null">
         <div class="button-img">
           <img :src="button.img">
         </div>
@@ -32,10 +32,6 @@ export default {
   watch: {
     '$store.getters.categories' (val) {
       this.categoryButtons.buttons = val
-    },
-    '$store.getters.allNotes' (val) {
-      this.menuButtons[1].selected = val
-      this.menuButtons[2].selected = !val
     }
   },
   data () {
@@ -55,10 +51,9 @@ export default {
           img: require('@/assets/HeaderNav/HeaderMenu/notebook.svg'),
           onClick: () => {
             this.$store.commit('SET_CATEGORY', '')
-            this.$store.commit('SET_ALL_NOTES', true)
+            this.selectedDirectory = 'All Notes'
             this.$store.dispatch('getNoteList')
-          },
-          selected: this.$store.getters.allNotes
+          }
         },
         {
           id: 3,
@@ -66,10 +61,9 @@ export default {
           img: require('@/assets/HeaderNav/HeaderMenu/star.svg'),
           onClick: () => {
             this.$store.commit('SET_CATEGORY', '')
-            this.$store.commit('SET_ALL_NOTES', false)
+            this.selectedDirectory = 'Starred'
             this.$store.dispatch('getNoteList')
-          },
-          selected: !this.$store.getters.allNotes
+          }
         },
         {
           id: 4,
@@ -77,7 +71,7 @@ export default {
           img: require('@/assets/HeaderNav/HeaderMenu/garbage.svg'),
           onClick: () => {
             this.$store.commit('SET_CATEGORY', '')
-            this.$store.commit('SET_ALL_NOTES', true)
+            this.selectedDirectory = 'Trash'
             this.$store.dispatch('getDeletedNoteList')
           }
         }
@@ -92,12 +86,22 @@ export default {
     selectCategory (category) {
       if (this.$store.getters.selectedCategory === category) {
         this.$store.commit('SET_CATEGORY', '')
-        this.$store.commit('SET_ALL_NOTES', true)
+        this.selectedCategory = 'All Notes'
         this.$store.dispatch('getNoteList')
       } else {
         this.$store.commit('SET_CATEGORY', category)
-        this.$store.commit('SET_ALL_NOTES', true)
+        this.selectedDirectory = 'All Notes'
         this.$store.dispatch('getNoteList')
+      }
+    }
+  },
+  computed: {
+    selectedDirectory: {
+      get: function () {
+        return this.$store.getters.selectedDirectory
+      },
+      set: function (val) {
+        return this.$store.commit('SET_DIRECTORY', val)
       }
     }
   }
