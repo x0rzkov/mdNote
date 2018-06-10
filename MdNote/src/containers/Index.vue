@@ -45,7 +45,8 @@ var md = MarkdownIt({
     }
     return ''
   },
-  breaks: true
+  breaks: true,
+  html: true
 })
 
 export default {
