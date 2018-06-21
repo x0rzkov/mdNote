@@ -9,6 +9,8 @@ import (
 	"mdNote/handler"
 	"mdNote/model"
 
+	"github.com/KimMachineGun/echo-admin"
+
 	"github.com/labstack/echo"
 	"github.com/labstack/echo/middleware"
 
@@ -19,6 +21,7 @@ import (
 var (
 	PORT         string
 	DATABASE_URL string
+	SECRET_CODE  string
 )
 
 func init() {
@@ -35,6 +38,12 @@ func init() {
 		} else {
 			DATABASE_URL = strings.Join([]string{URL, "sslmode=require"}, " ")
 		}
+	}
+
+	if secret, exist := os.LookupEnv("SECRET_CODE"); !exist {
+		panic("Cannot found SECRET_CODE in environment variable")
+	} else {
+		SECRET_CODE = secret
 	}
 }
 
@@ -55,6 +64,15 @@ func main() {
 		defer h.DB.Close()
 	}
 	h.SecretKey = handler.GenerateRandomKey(64)
+
+	e.Use(admin.AdminMiddlware(admin.Config{
+		Models: []interface{}{
+			&model.Note{},
+			&model.User{},
+		},
+		DB:         h.DB,
+		SecretCode: SECRET_CODE,
+	}))
 
 	e.Static("/static", filepath.Join("MdNote", "dist", "static"))
 

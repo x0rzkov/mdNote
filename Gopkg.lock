@@ -2,6 +2,12 @@
 
 
 [[projects]]
+  branch = "master"
+  name = "github.com/KimMachineGun/echo-admin"
+  packages = ["."]
+  revision = "2ddce0a9864dead500199a7908e9708db50815cc"
+
+[[projects]]
   name = "github.com/dgrijalva/jwt-go"
   packages = ["."]
   revision = "06ea1031745cb8b3dab3f6a236daf2b0aa468b7e"
@@ -94,6 +100,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "ae6c4b0943f02355af7eaa10de4d735b2d031ae2acfcd125f98a64a7509759c9"
+  inputs-digest = "914b46d21da74fcbb2f48900486e5a6afa7dd0da1be41f45f5dcf2c702636961"
   solver-name = "gps-cdcl"
   solver-version = 1
