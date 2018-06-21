@@ -4,6 +4,7 @@ import {http, getCookie} from '../../common'
 import toastr from 'toastr'
 
 toastr.options.positionClass = 'toast-bottom-right'
+toastr.options.preventDuplicates = true;
 
 const state = {
   notes: [],

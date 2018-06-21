@@ -51,4 +51,10 @@ html, body {
 *::-webkit-scrollbar-thumb:hover {
   background: #777;
 }
+
+@media print {
+  #app {
+    height: auto;
+  }
+}
 </style>

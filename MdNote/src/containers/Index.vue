@@ -19,10 +19,9 @@
         <img :src="fullScreenImg" @click="fullScreen = !fullScreen">
         <img :src="garbage" @click="deleteNote">
         <img :src="starred" @click="starNote">
+        <img :src="require('@/assets/Index/download.svg')" @click="printNote">
       </div>
-      <div id="markdown-title">{{ tempNote.title }}</div>
-      <div id="markdown" v-html="htmlSource" class="markdown-body">
-      </div>
+      <viewer :htmlSource="htmlSource" :title="tempNote.title" class="note-viewer" :category="tempNote.category" />
     </div>
   </div>
 </template>
@@ -30,6 +29,7 @@
 <script>
 import Explorer from '@/components/Explorer/Explorer'
 import HeaderNav from '@/components/HeaderNav/HeaderNav'
+import Viewer from '@/components/Viewer/Viewer'
 import toastr from 'toastr'
 import hljs from 'highlight.js'
 import MarkdownIt from 'markdown-it'
@@ -46,14 +46,16 @@ var md = MarkdownIt({
     return ''
   },
   breaks: true,
-  html: true
+  html: true,
+  langPrefix: 'language'
 })
 
 export default {
   name: 'Index',
   components: {
     Explorer,
-    HeaderNav
+    HeaderNav,
+    Viewer
   },
   computed: {
     headerMenu () {
@@ -126,6 +128,9 @@ export default {
       } else {
         this.$store.dispatch('deleteNote', this.tempNote.id)
       }
+    },
+    printNote () {
+      window.print()
     }
   },
   watch: {
@@ -251,14 +256,16 @@ export default {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  overflow-x: hidden;
-  overflow-x: hidden;
+  overflow: hidden;
+}
+
+.note-viewer {
+  height: 95% !important;
 }
 
 #tools {
   float: right;
   height: 30px;
-  width: 100px;
   position: absolute;
   top: 15px;
   right: 15px;
@@ -266,44 +273,47 @@ export default {
   display: flex;
   align-items: center;
   justify-content: space-around;
+  z-index: 100;
 }
 
 #tools > img {
   width: 20px;
   height: 20px;
-  cursor: pointer;
-}
-
-#markdown-title {
-  width: 95%;
-  padding: 15px;
-  word-break: break-all;
-  font-size: 50px;
-  font-weight: bold;
-  line-height: 80px;
-  min-height: 80px;
   margin: 5px;
-  border-radius: 15px;
-}
-
-#markdown {
-  width: 95%;
-  height: calc(95% - 90px);
-  padding: 15px;
-  font-size: 130%;
-  word-break: break-all;
-  overflow-y: auto;
+  cursor: pointer;
 }
 
 .full {
   width: calc(100% - 300px) !important;
 }
 
-.full > #markdown {
-  font-size: 160%;
+.full > .note-viewer {
+  height: 100%;
+}
+
+.full > .note-viewer:last-child {
+  font-size: 110%;
 }
 
 .close {
   width: 0 !important;
+}
+
+@media print {
+  #viewer {
+    position: relative;
+    top: 0;
+    left: 0;
+    width: 100% !important;
+    overflow: visible;
+  }
+
+  #editor {
+    display: none;
+  }
+
+  #tools {
+    display: none;
+  }
 }
 </style>

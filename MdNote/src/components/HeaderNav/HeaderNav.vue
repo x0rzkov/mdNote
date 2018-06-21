@@ -114,4 +114,10 @@ export default {
 #user-name:hover {
   color: #d35d5d;
 }
+
+@media print {
+  #header-nav-wrapper {
+    display: none;
+  }
+}
 </style>

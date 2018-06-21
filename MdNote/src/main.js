@@ -6,7 +6,7 @@ import router from './router'
 import store from './store'
 
 import 'highlight.js/styles/github.css'
-import 'toastr/build/toastr.min.css'
+import './toastr.css'
 import 'toastr/build/toastr.min.js'
 import 'github-markdown-css'
 
