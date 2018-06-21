@@ -99,7 +99,7 @@ func (h Handler) SaveNote(c echo.Context) error {
 		}
 
 		return c.JSON(http.StatusCreated, &note)
-	} else if h.DB.First(&model.Note{}, "id = ?", note.ID).RecordNotFound() {
+	} else if h.DB.First(&model.Note{}, "id = ? AND user_id = ?", note.ID, note.UserID).RecordNotFound() {
 		return c.NoContent(http.StatusNotFound)
 	}
 
