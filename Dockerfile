@@ -1,20 +1,13 @@
-FROM golang:latest
-MAINTAINER KimMachineGun <geon0250@gmail.com>
-
-RUN apt-get update && apt-get upgrade -y
-RUN apt-get install curl -y
-RUN curl -sL https://deb.nodesource.com/setup_6.x | bash -
-RUN apt-get install -y nodejs
-# RUN apt-get install -y npm
-
-RUN go get -u github.com/golang/dep/cmd/dep
+FROM golang:alpine AS build
 
 ADD . /go/src/mdNote
-
 WORKDIR /go/src/mdNote
 
-RUN dep ensure
-RUN go build -i
+RUN apk add --no-cache git dep npm build-base
+RUN rm -rf /var/cache/apk/*
+
+RUN dep ensure -vendor-only
+RUN go vet
 
 WORKDIR /go/src/mdNote/MdNote
 
@@ -23,7 +16,12 @@ RUN npm run build
 
 WORKDIR /go/src/mdNote
 
+RUN go build -a -o mdNote
+
+FROM scratch
+COPY --from=build /go/src/mdNote /mdNote
+COPY --from=build /go/src/mdNote/MdNote/dist /MdNote/dist
 ENV PORT $PORT
 ENV DATABASE_URL $DATABASE_URL
 
-CMD [ "./mdNote" ]
+CMD [ "/mdNote" ]
